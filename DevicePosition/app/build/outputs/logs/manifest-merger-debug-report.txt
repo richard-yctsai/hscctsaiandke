@@ -1,0 +1,124 @@
+-- Merging decision tree log ---
+manifest
+ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:2:1-26:12
+INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:2:1-26:12
+INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:2:1-26:12
+INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:2:1-26:12
+MERGED from [com.android.support:appcompat-v7:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\appcompat-v7-25.1.1.aar\e6491fd2153d5b318fcc2a54dda5da3b\AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:animated-vector-drawable:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-25.1.1.aar\3d08aad25edc6fef3b519e6a660b8cef\AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:support-vector-drawable:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-25.1.1.aar\b46b56f24ca57730f71ec370c614f10a\AndroidManifest.xml:17:1-25:12
+MERGED from [com.android.support:support-v4:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-v4-25.1.1.aar\c392ce6c4efeff04698f5ea9c48c882e\AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-fragment:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-fragment-25.1.1.aar\8cdc614c9468afbcb78e6e61ecc0d343\AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-media-compat:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-media-compat-25.1.1.aar\8cb62e089020332917efb4758fc6cb25\AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-core-utils:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-core-utils-25.1.1.aar\96bdb3c3905b486d3cc16436e37b9f37\AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-core-ui:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-core-ui-25.1.1.aar\70749a6e53e3171e7a6b21caf0ddbca9\AndroidManifest.xml:17:1-27:12
+MERGED from [com.android.support:support-compat:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-compat-25.1.1.aar\d461117ef97fa3d06c9a2e93e29d57d6\AndroidManifest.xml:17:1-27:12
+INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:2:1-26:12
+INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:2:1-26:12
+INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:2:1-26:12
+	package
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:3:5-49
+		INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:2:1-26:12
+		INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:2:1-26:12
+		INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:4:5-67
+	android:name
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:4:22-64
+uses-sdk
+ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:5:5-74
+INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:5:5-74
+INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:5:5-74
+MERGED from [com.android.support:appcompat-v7:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\appcompat-v7-25.1.1.aar\e6491fd2153d5b318fcc2a54dda5da3b\AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:appcompat-v7:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\appcompat-v7-25.1.1.aar\e6491fd2153d5b318fcc2a54dda5da3b\AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:animated-vector-drawable:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-25.1.1.aar\3d08aad25edc6fef3b519e6a660b8cef\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-25.1.1.aar\3d08aad25edc6fef3b519e6a660b8cef\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-25.1.1.aar\b46b56f24ca57730f71ec370c614f10a\AndroidManifest.xml:21:5-43
+MERGED from [com.android.support:support-vector-drawable:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-25.1.1.aar\b46b56f24ca57730f71ec370c614f10a\AndroidManifest.xml:21:5-43
+MERGED from [com.android.support:support-v4:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-v4-25.1.1.aar\c392ce6c4efeff04698f5ea9c48c882e\AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-v4:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-v4-25.1.1.aar\c392ce6c4efeff04698f5ea9c48c882e\AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-fragment:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-fragment-25.1.1.aar\8cdc614c9468afbcb78e6e61ecc0d343\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-fragment:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-fragment-25.1.1.aar\8cdc614c9468afbcb78e6e61ecc0d343\AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-media-compat:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-media-compat-25.1.1.aar\8cb62e089020332917efb4758fc6cb25\AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-media-compat:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-media-compat-25.1.1.aar\8cb62e089020332917efb4758fc6cb25\AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-core-utils:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-core-utils-25.1.1.aar\96bdb3c3905b486d3cc16436e37b9f37\AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-core-utils:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-core-utils-25.1.1.aar\96bdb3c3905b486d3cc16436e37b9f37\AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:support-core-ui:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-core-ui-25.1.1.aar\70749a6e53e3171e7a6b21caf0ddbca9\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-core-ui:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-core-ui-25.1.1.aar\70749a6e53e3171e7a6b21caf0ddbca9\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-compat:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-compat-25.1.1.aar\d461117ef97fa3d06c9a2e93e29d57d6\AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-compat:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-compat-25.1.1.aar\d461117ef97fa3d06c9a2e93e29d57d6\AndroidManifest.xml:21:5-23:58
+INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:5:5-74
+INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:5:5-74
+	tools:overrideLibrary
+		ADDED from [com.android.support:appcompat-v7:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\appcompat-v7-25.1.1.aar\e6491fd2153d5b318fcc2a54dda5da3b\AndroidManifest.xml:23:9-75
+	android:targetSdkVersion
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:5:42-71
+		INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:5:15-41
+		INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml
+		INJECTED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml
+application
+ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:6:5-22:19
+MERGED from [com.android.support:appcompat-v7:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\appcompat-v7-25.1.1.aar\e6491fd2153d5b318fcc2a54dda5da3b\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:appcompat-v7:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\appcompat-v7-25.1.1.aar\e6491fd2153d5b318fcc2a54dda5da3b\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:animated-vector-drawable:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-25.1.1.aar\3d08aad25edc6fef3b519e6a660b8cef\AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:animated-vector-drawable:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\animated-vector-drawable-25.1.1.aar\3d08aad25edc6fef3b519e6a660b8cef\AndroidManifest.xml:22:5-20
+MERGED from [com.android.support:support-vector-drawable:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-25.1.1.aar\b46b56f24ca57730f71ec370c614f10a\AndroidManifest.xml:23:5-20
+MERGED from [com.android.support:support-vector-drawable:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-vector-drawable-25.1.1.aar\b46b56f24ca57730f71ec370c614f10a\AndroidManifest.xml:23:5-20
+MERGED from [com.android.support:support-v4:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-v4-25.1.1.aar\c392ce6c4efeff04698f5ea9c48c882e\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-v4:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-v4-25.1.1.aar\c392ce6c4efeff04698f5ea9c48c882e\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-fragment:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-fragment-25.1.1.aar\8cdc614c9468afbcb78e6e61ecc0d343\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-fragment:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-fragment-25.1.1.aar\8cdc614c9468afbcb78e6e61ecc0d343\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-media-compat:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-media-compat-25.1.1.aar\8cb62e089020332917efb4758fc6cb25\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-media-compat:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-media-compat-25.1.1.aar\8cb62e089020332917efb4758fc6cb25\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-utils:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-core-utils-25.1.1.aar\96bdb3c3905b486d3cc16436e37b9f37\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-utils:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-core-utils-25.1.1.aar\96bdb3c3905b486d3cc16436e37b9f37\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-ui:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-core-ui-25.1.1.aar\70749a6e53e3171e7a6b21caf0ddbca9\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-core-ui:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-core-ui-25.1.1.aar\70749a6e53e3171e7a6b21caf0ddbca9\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-compat:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-compat-25.1.1.aar\d461117ef97fa3d06c9a2e93e29d57d6\AndroidManifest.xml:25:5-20
+MERGED from [com.android.support:support-compat:25.1.1] C:\Users\Richard Yi-Chia TSAI\.gradle\caches\transforms-1\files-1.1\support-compat-25.1.1.aar\d461117ef97fa3d06c9a2e93e29d57d6\AndroidManifest.xml:25:5-20
+	android:screenOrientation
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:10:9-45
+	android:supportsRtl
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:12:9-35
+	android:label
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:11:9-41
+	android:icon
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:9:9-43
+	android:allowBackup
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:8:9-35
+	android:theme
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:13:9-40
+activity#com.example.weichun.deviceposition.MainActivity
+ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:14:9-21:20
+	android:name
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:14:19-47
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:16:13-20:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:17:17-69
+	android:name
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:17:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:19:17-77
+	android:name
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:19:27-74
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:23:5-81
+	android:name
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:23:22-78
+uses-permission#android.permission.READ_EXTERNAL_STORAGE
+ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:24:5-80
+	android:name
+		ADDED from C:\Users\Richard Yi-Chia TSAI\Desktop\EyeOnYouServer\DevicePosition\app\src\main\AndroidManifest.xml:24:22-77
