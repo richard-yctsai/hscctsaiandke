@@ -1,4 +1,0 @@
-#Thu Nov 30 14:04:02 CST 2017
-base.0=C\:\\Users\\Richard Yi-Chia TSAI\\Desktop\\EyeOnYouServer\\DevicePosition\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\29
-path.0=classes.dex
-renamed.0=classes.dex
