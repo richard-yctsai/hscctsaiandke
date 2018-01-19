@@ -1,12 +1,15 @@
 #include "RobotDrive.h"
 
-RobotDrive::RobotDrive(char*  init_drivetowhere, int init_driveunit)
-{
-	memset(RobotDrive::drivetowhere, 0, sizeof(RobotDrive::drivetowhere));
-	strcat_s(RobotDrive::drivetowhere, Max_Char_Drivetowhere, init_drivetowhere);
+char RobotDrive::drivetowhere[Max_Char_Drivetowhere] = "stop";
+int RobotDrive::driveunit = 0;
 
-	RobotDrive::driveunit = init_driveunit;
-}
+//RobotDrive::RobotDrive(char*  init_drivetowhere, int init_driveunit)
+//{
+//	memset(RobotDrive::drivetowhere, 0, sizeof(RobotDrive::drivetowhere));
+//	strcat_s(RobotDrive::drivetowhere, Max_Char_Drivetowhere, init_drivetowhere);
+//
+//	RobotDrive::driveunit = init_driveunit;
+//}
 
 char* RobotDrive::getDrivetowhere()
 {

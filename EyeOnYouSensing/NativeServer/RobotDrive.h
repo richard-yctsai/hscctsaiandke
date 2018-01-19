@@ -12,7 +12,7 @@ class RobotDrive {
 		static int driveunit;
 
 	public:
-		RobotDrive(char*  init_drivetowhere, int init_driveunit);
+		//RobotDrive(char*  init_drivetowhere, int init_driveunit);
 		static char* getDrivetowhere();
 		static int getDriveunit();
 		static void setDrivetowhere(char* rec_drivetowhere);

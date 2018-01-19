@@ -1,13 +1,19 @@
 #include "VotingPID.h"
 
-VotingPID::VotingPID(vector<string> init_myPIDVector, string init_id, string init_nameVoting)
-{
-	id = init_id;
-	for (int i = 0; i < 6; i++) {	
-		nameVoting[i] = init_nameVoting;
-		myPIDVector.push_back(init_myPIDVector);
-	}
-}
+vector< vector<string> > VotingPID::myPIDVector(
+	6,
+	vector<string>(votingLength, "unknown") );
+int VotingPID::ID = -1;
+string VotingPID::nameVoting[6] = {""};
+
+//VotingPID::VotingPID(vector<string> init_myPIDVector, string init_id, string init_nameVoting)
+//{
+//	id = init_id;
+//	for (int i = 0; i < 6; i++) {	
+//		nameVoting[i] = init_nameVoting;
+//		myPIDVector.push_back(init_myPIDVector);
+//	}
+//}
 
 pair<string, unsigned int> VotingPID::get_max(const map<string, unsigned int>& x)
 {
@@ -30,15 +36,31 @@ string VotingPID::modeOfVector(const vector<string>& vals)
 	return max.first;
 }
 
-string VotingPID::votingOfPID(string ID, string NAME)
+string VotingPID::votingOfPID(int rec_id, string rec_name)
 {
-	int myPIDID = stoi(ID);
+	if (myPIDVector[rec_id].size() == votingLength)
+		myPIDVector[rec_id].erase(myPIDVector[rec_id].begin());
 
-	if (myPIDVector[myPIDID].size() == votingLength)
-		myPIDVector[myPIDID].erase(myPIDVector[myPIDID].begin());
+	myPIDVector[rec_id].push_back(rec_name);
 
-	myPIDVector[myPIDID].push_back(NAME);
+	cout << "myPIDVector[myPIDID].size()" << myPIDVector[rec_id].size() << endl;
+	return modeOfVector(myPIDVector[rec_id]);
+}
 
-	cout << "myPIDVector[myPIDID].size()" << myPIDVector[myPIDID].size() << endl;
-	return modeOfVector(myPIDVector[myPIDID]);
+int VotingPID::getID()
+{
+	return ID;
+}
+void VotingPID::setID(string rec_id)
+{
+	ID = stoi(rec_id);
+}
+
+string VotingPID::getnameVotingWithIndex(int rec_index)
+{
+	return nameVoting[rec_index];
+}
+void VotingPID::setnameVotingWithIndex(int rec_index, string rec_VotingResult)
+{
+	nameVoting[rec_index] = rec_VotingResult;
 }

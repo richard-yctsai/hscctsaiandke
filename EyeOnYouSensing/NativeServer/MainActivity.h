@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include "RobotDrive.h"
 #include "VotingPID.h"
+#include "KinectSetup.h"
 
 using namespace std;
 

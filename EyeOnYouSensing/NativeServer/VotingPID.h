@@ -13,14 +13,18 @@ class VotingPID {
 		// PIDVector for voting
 		static const int votingLength = 5;
 		static vector< vector<string> > myPIDVector;
-		static string id;
+		static int ID;
 		static string nameVoting[6];
 
 	public:
-		VotingPID(vector<string> init_myPIDVector, string init_id, string init_nameVoting);
+		//VotingPID(vector<string> init_myPIDVector, string init_id, string init_nameVoting);
 		static pair<string, unsigned int> get_max(const map<string, unsigned int>& x);
 		static string modeOfVector(const vector<string>& vals);
-		static string votingOfPID(string ID, string NAME);
+		static string votingOfPID(int rec_id, string rec_name);
+		static int getID();
+		static void setID(string rec_id);
+		static string getnameVotingWithIndex(int rec_index);
+		static void setnameVotingWithIndex(int rec_index, string rec_VotingResult);
 };
 
 #endif

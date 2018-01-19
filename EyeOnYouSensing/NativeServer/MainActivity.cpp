@@ -45,11 +45,10 @@ char cmdLinePID[Max_Char] = "java -cp \"C:/Users/Richard Yi-Chia TSAI/Desktop/ec
 
 void DrawLine(cv::Mat& rImg, const Joint& rJ1, const Joint& rJ2, ICoordinateMapper* pCMapper);
 void DrawJoint(cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper);
-void DrawPosition(string ID, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper);
+void robotTracking(string ID, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper);
 void DrawIdentity(string ID, string NAME, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper);
 void writeInfo(int, ofstream&, Joint*, ICoordinateMapper*, char*);
 void systemCallCmd(char* cmd);
-void DrawReachOutPercentage(cv::Mat& rImg, const Joint& rJ1, const Joint& rJ2, const Joint& hrJ3, ICoordinateMapper* pCMapper);
 
 DWORD WINAPI ThreadFunc(void* data) {
 	cout << "Native server starting" << endl;
@@ -66,10 +65,8 @@ DWORD WINAPI ThreadFunc(void* data) {
 int _tmain(int argc, _TCHAR* argv[])
 {
 	//EyeOnYouRobot = new RobotDrive("", 0);
-	RobotDrive("stop", 0);
-
-	vector<string> myColumn = {};
-	VotingPID(myColumn, "", "");
+	//vector<string> myColumn = {};
+	//VotingPID(myColumn, "", "");
 
 	// 0. Initialize server socket to conduct interprocess communication with java-based robot
 	HANDLE thread = CreateThread(NULL, 0, ThreadFunc, NULL, 0, NULL);
@@ -305,11 +302,9 @@ int _tmain(int argc, _TCHAR* argv[])
 
 							//writeInfo(i, csvfile, aJoints, pCoordinateMapper, time_str);
 
-							DrawPosition(to_string(i), mImg, aJoints[JointType::JointType_Head], pCoordinateMapper);
+							robotTracking(to_string(i), mImg, aJoints[JointType::JointType_Head], pCoordinateMapper);
 
-							//DrawIdentity(to_string(i), nameVoting[i], mImg, aJoints[JointType::JointType_Head], pCoordinateMapper);
-
-							//DrawReachOutPercentage(mImg, aJoints[JointType_ShoulderRight], aJoints[JointType_WristRight], aJoints[JointType_Head], pCoordinateMapper);
+							DrawIdentity(to_string(i), VotingPID::getnameVotingWithIndex(i), mImg, aJoints[JointType::JointType_Head], pCoordinateMapper);
 						}
 					}
 
@@ -330,52 +325,44 @@ int _tmain(int argc, _TCHAR* argv[])
 				{
 				cout << "People counts CHANGE: right now ->" << realiBodyCount << " last time -> " << lastiBodyCount << endl;
 				csvfile.close();
-				systemCallCmd(cmdLine);
+				systemCallCmd(cmdLinePID);
 				csvfile.open(csvfilename);
 				}*/
 
-				//if (step != 0 && (step % 60 == 0))
-				//{
-				//	lastiBodyCount = realiBodyCount;
-				//	cout << "People counts: " << realiBodyCount << endl;
-				//	csvfile.close();
-				//	systemCallCmd(cmdLine);
-				//	csvfile.open(csvfilename);
+				if (step != 0 && (step % 60 == 0))
+				{
+					lastiBodyCount = realiBodyCount;
+					cout << "People counts: " << realiBodyCount << endl;
+					csvfile.close();
+					systemCallCmd(cmdLinePID);
+					csvfile.open(csvfilename);
 
-				//	resultfile.open(resultfilename);
-				//	if (resultfile.is_open()) {
-				//		// read ID and position of head joint and then putText
-				//		getline(resultfile, line, '\n');
-				//		resultfile.close();
-				//	}
+					resultfile.open(resultfilename);
+					if (resultfile.is_open()) {
+						// read ID and position of head joint and then putText
+						getline(resultfile, line, '\n');
+						resultfile.close();
+					}
 
-				//	istringstream templine(line);
-				//	string data, nameReadFile;
-				//	double x, y;
-				//	int idx = 0;
-				//	while (getline(templine, data, ',')) {
-				//		if (idx % 4 == 0)
-				//			id = data.c_str();
-				//		else if (idx % 4 == 1)
-				//			nameReadFile = data.c_str();
-				//		else if (idx % 4 == 2)
-				//			x = atof(data.c_str());
-				//		else
-				//		{
-				//			y = atof(data.c_str());
-
-				//			//bool isBinding
-				//			//if (isBinding == 0)
-				//			//	id, name = voting();
-				//			//	DrawIdentity(id, name, mImg, aJoints[JointType::JointType_Head], pCoordinateMapper);
-				//			//else if (isBinding == 1)
-				//			//	DrawIdentity(id, name, mImg, aJoints[JointType::JointType_Head], pCoordinateMapper);
-
-				//			nameVoting[stoi(id)] = votingOfPID(id, nameReadFile);
-				//		}
-				//		idx += 1;
-				//	}
-				//}
+					istringstream templine(line);
+					string data, nameReadFile;
+					double x, y;
+					int idx = 0;
+					while (getline(templine, data, ',')) {
+						if (idx % 4 == 0)
+							VotingPID::setID(data.c_str());
+						else if (idx % 4 == 1)
+							nameReadFile = data.c_str();
+						else if (idx % 4 == 2)
+							x = atof(data.c_str());
+						else
+						{
+							y = atof(data.c_str()); 
+							VotingPID::setnameVotingWithIndex(VotingPID::getID(), VotingPID::votingOfPID(VotingPID::getID(), nameReadFile));
+						}
+						idx += 1;
+					}
+				}
 			}
 			else
 			{
@@ -468,7 +455,7 @@ void DrawJoint(cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper)
 	}
 }
 
-void DrawPosition(string ID, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper)
+void robotTracking(string ID, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper)
 {
 	if (rJ1.TrackingState == TrackingState_NotTracked)
 		return;
@@ -478,9 +465,9 @@ void DrawPosition(string ID, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper*
 
 	if ((ptJ1.X >= 0 && ptJ1.X <= rImg.cols) && (ptJ1.Y >= 0 && ptJ1.Y <= rImg.rows)) {
 		putText(rImg, ID, cv::Point(ptJ1.X, ptJ1.Y - 50), 0, 3, cv::Scalar(255, 0, 0), 6);	// draw IDs of each user
-		putText(rImg, to_string(rJ1.Position.X), cv::Point(ptJ1.X, ptJ1.Y - 300), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw NAMEs of each user
-		putText(rImg, to_string(rJ1.Position.Y), cv::Point(ptJ1.X, ptJ1.Y - 200), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw NAMEs of each user
-		putText(rImg, to_string(rJ1.Position.Z), cv::Point(ptJ1.X, ptJ1.Y - 100), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw NAMEs of each user
+		putText(rImg, to_string(rJ1.Position.X), cv::Point(ptJ1.X, ptJ1.Y - 300), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw X axis of each user
+		putText(rImg, to_string(rJ1.Position.Y), cv::Point(ptJ1.X, ptJ1.Y - 200), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw Y axis of each user
+		putText(rImg, to_string(rJ1.Position.Z), cv::Point(ptJ1.X, ptJ1.Y - 100), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw Z axis of each user
 	}
 
 	if ( (rJ1.Position.Z <= 4 && rJ1.Position.Z >= 3) || (rJ1.Position.X <= 0.5 && rJ1.Position.X >= -0.5) ) {
@@ -560,34 +547,5 @@ void writeInfo(int ID, ofstream& csvout, Joint *aJoints, ICoordinateMapper* pCMa
 void systemCallCmd(char* cmd)
 {
 	system(cmd);
-}
-
-//¥kªÓ¥k¤âÀY
-void DrawReachOutPercentage(cv::Mat& rImg, const Joint& rJ1, const Joint& rJ2, const Joint& hrJ3, ICoordinateMapper* pCMapper)
-{
-	if (rJ1.TrackingState == TrackingState_NotTracked)
-		return;
-	if (rJ2.TrackingState == TrackingState_NotTracked)
-		return;
-
-	ColorSpacePoint ptJ3;
-	pCMapper->MapCameraPointToColorSpace(hrJ3.Position, &ptJ3);
-	float percentage = 0;
-	percentage = 100 - abs(rJ1.Position.Y - rJ2.Position.Y) * 100;
-	if (percentage >= 0) {
-		cv::putText(rImg, to_string(percentage) + "%", cv::Point(ptJ3.X + 100, ptJ3.Y - 100), cv::FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv::LINE_AA);
-	}
-	//Draw something
-	ColorSpacePoint ptJ1;
-	pCMapper->MapCameraPointToColorSpace(rJ1.Position, &ptJ1);
-	ColorSpacePoint ptJ2;
-	pCMapper->MapCameraPointToColorSpace(rJ2.Position, &ptJ2);
-
-	if ((ptJ1.X >= 0 && ptJ1.X <= rImg.cols) && (ptJ1.Y >= 0 && ptJ1.Y <= rImg.rows)) {
-		cv::putText(rImg, to_string(rJ1.Position.Y), cv::Point(ptJ1.X, ptJ1.Y - 50), cv::FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv::LINE_AA);
-	}
-	if ((ptJ2.X >= 0 && ptJ2.X <= rImg.cols) && (ptJ2.Y >= 0 && ptJ2.Y <= rImg.rows)) {
-		cv::putText(rImg, to_string(rJ2.Position.Y), cv::Point(ptJ2.X, ptJ2.Y - 50), cv::FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv::LINE_AA);
-	}
 }
 
