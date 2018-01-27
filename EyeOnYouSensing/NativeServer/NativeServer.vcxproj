@@ -162,8 +162,10 @@
   <ItemGroup>
     <ClCompile Include="CThread.cpp" />
     <ClCompile Include="MainActivity.cpp" />
+    <ClCompile Include="PIDRun.cpp" />
     <ClCompile Include="RobotDrive.cpp" />
     <ClCompile Include="ServerSocket.cpp" />
+    <ClCompile Include="ServerSocketRunPID.cpp" />
     <ClCompile Include="SocketListener.cpp" />
     <ClCompile Include="SocketSender.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -174,8 +176,10 @@
     <ClInclude Include="CThread.h" />
     <ClInclude Include="KinectSetup.h" />
     <ClInclude Include="MainActivity.h" />
+    <ClInclude Include="PIDRun.h" />
     <ClInclude Include="RobotDrive.h" />
     <ClInclude Include="ServerSocket.h" />
+    <ClInclude Include="ServerSocketRunPID.h" />
     <ClInclude Include="SocketListener.h" />
     <ClInclude Include="SocketSender.h" />
     <ClInclude Include="stdafx.h" />

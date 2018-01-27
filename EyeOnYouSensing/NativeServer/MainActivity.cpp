@@ -9,8 +9,10 @@
 // Standard Library
 #include "stdafx.h"
 #include "ServerSocket.h"
+#include "ServerSocketRunPID.h"
 
 #pragma comment(lib, "ws2_32.lib") // link winsock2
+#include <thread>
 
 #include <iostream>
 #include <windows.h>
@@ -18,10 +20,8 @@
 #include <string>
 #include <string.h>
 #include <sstream>
-#include <thread>
 #include <cstring>
 #include <cstdlib>
-
 
 // OpenCV Header
 #include <opencv2/core.hpp>
@@ -48,13 +48,24 @@ void DrawJoint(cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper);
 void robotTracking(string ID, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper);
 void DrawIdentity(string ID, string NAME, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper);
 void writeInfo(int, ofstream&, Joint*, ICoordinateMapper*, char*);
-void systemCallCmd(char* cmd);
 
-DWORD WINAPI ThreadFunc(void* data) {
-	cout << "Native server starting" << endl;
+DWORD WINAPI DriveRobotThreadFunc(void* data) {
+	cout << "Native ServerSocketDriveRobot server starting" << endl;
 
 	// Start server socket listener
 	ServerSocket* server = new ServerSocket();
+	server->startThread();
+
+	// Wait for server socket to terminate
+	WaitForSingleObject(server->getThread(), INFINITE);
+	return 0;
+}
+
+DWORD WINAPI RunPIDThreadFunc(void* data) {
+	cout << "Native ServerSocketRunPID server starting" << endl;
+
+	// Start server socket listener
+	ServerSocketRunPID* server = new ServerSocketRunPID();
 	server->startThread();
 
 	// Wait for server socket to terminate
@@ -69,7 +80,14 @@ int _tmain(int argc, _TCHAR* argv[])
 	//VotingPID(myColumn, "", "");
 
 	// 0. Initialize server socket to conduct interprocess communication with java-based robot
-	HANDLE thread = CreateThread(NULL, 0, ThreadFunc, NULL, 0, NULL);
+	HANDLE threadRobot = CreateThread(NULL, 0, DriveRobotThreadFunc, NULL, 0, NULL);
+	HANDLE threadServer = CreateThread(NULL, 0, RunPIDThreadFunc, NULL, 0, NULL);
+	int WaitForSocket = 3;
+	while (WaitForSocket > 0) {
+		cout << WaitForSocket << endl;
+		WaitForSocket--;
+		Sleep(1000);
+	}
 
 	// 1a. Get default Sensor
 	cout << "Try to get default sensor" << endl;
@@ -204,10 +222,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	sprintf_s(start_time_str, 13, "%02d:%02d:%02d:%03d", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
 
 	// count down to start
-	int s = 3;
-	while (s > 0) {
-		cout << s << endl;
-		s--;
+	int WaitForKinect = 3;
+	while (WaitForKinect > 0) {
+		cout << WaitForKinect << endl;
+		WaitForKinect--;
 		Sleep(1000);
 	}
 
@@ -300,7 +318,7 @@ int _tmain(int argc, _TCHAR* argv[])
 								DrawJoint(mImg, aJoints[j], pCoordinateMapper);
 							}
 
-							//writeInfo(i, csvfile, aJoints, pCoordinateMapper, time_str);
+							writeInfo(i, csvfile, aJoints, pCoordinateMapper, time_str);
 
 							robotTracking(to_string(i), mImg, aJoints[JointType::JointType_Head], pCoordinateMapper);
 
@@ -329,12 +347,15 @@ int _tmain(int argc, _TCHAR* argv[])
 				csvfile.open(csvfilename);
 				}*/
 
-				if (step != 0 && (step % 60 == 0))
+				//if (step != 0 && (step % 30 == 0) && PIDRun::getExecutePID() == true)
+				if (PIDRun::getExecutePID() == true)
 				{
 					lastiBodyCount = realiBodyCount;
 					cout << "People counts: " << realiBodyCount << endl;
+
 					csvfile.close();
-					systemCallCmd(cmdLinePID);
+					PIDRun::systemCallCmd(cmdLinePID);
+					PIDRun::setExecutePID(false);
 					csvfile.open(csvfilename);
 
 					resultfile.open(resultfilename);
@@ -543,9 +564,3 @@ void writeInfo(int ID, ofstream& csvout, Joint *aJoints, ICoordinateMapper* pCMa
 			<< ID << "," << ptJ_Head.X / 1920 * 1366 << "," << ptJ_Head.Y / 1080 * 768 << "," << time_str << "\n";
 	}
 }
-
-void systemCallCmd(char* cmd)
-{
-	system(cmd);
-}
-

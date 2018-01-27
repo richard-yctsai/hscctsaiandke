@@ -48,6 +48,21 @@ void SocketSender::sendRandomNumberResponse() {
 	sendXMLToClient(buffer);
 }
 
+void SocketSender::sendKinectRunPIDResponse() {
+	char buffer[512];
+	buffer[0] = 0;
+
+	char response_drivetowhere[512] = "";
+	int response_driveunit = 0;
+
+	memset(response_drivetowhere, 0, sizeof(response_drivetowhere));
+	strcat_s(response_drivetowhere, 512, RobotDrive::getDrivetowhere());
+	response_driveunit = RobotDrive::getDriveunit();
+
+	sprintf_s(buffer, "%s,%i\n", "Yeah!", 5865);
+	sendXMLToClient(buffer);
+}
+
 void SocketSender::sendXMLToClient(char xml[]) {
 	// Send some XML to the client
 	int len = strlen(xml);

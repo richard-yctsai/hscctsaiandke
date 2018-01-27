@@ -1,59 +1,23 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\EyeOnYouServer\\DevicePosition\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+            "outputFile": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\hscctsaiandke\\DevicePosition\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\EyeOnYouServer\\DevicePosition\\app\\src\\main\\res\\values\\dimens.xml",
+                    "source": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\hscctsaiandke\\DevicePosition\\app\\src\\main\\res\\values\\colors.xml",
                     "from": {
-                        "startLines": "2,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "90,149",
-                        "endColumns": "57,55",
-                        "endOffsets": "143,200"
+                        "startLines": "4,2,3",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "157,57,105",
+                        "endColumns": "45,46,50",
+                        "endOffsets": "198,99,151"
                     },
                     "to": {
-                        "startLines": "279,280",
-                        "startColumns": "4,4",
-                        "startOffsets": "29772,29830",
-                        "endColumns": "57,55",
-                        "endOffsets": "29825,29881"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\EyeOnYouServer\\DevicePosition\\app\\src\\main\\res\\values\\strings.xml",
-                    "from": {
-                        "startLines": "1,2",
-                        "startColumns": "4,4",
-                        "startOffsets": "17,70",
-                        "endColumns": "51,43",
-                        "endOffsets": "64,109"
-                    },
-                    "to": {
-                        "startLines": "351,352",
-                        "startColumns": "4,4",
-                        "startOffsets": "34703,34755",
-                        "endColumns": "51,43",
-                        "endOffsets": "34750,34794"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\EyeOnYouServer\\DevicePosition\\app\\src\\main\\res\\values\\styles.xml",
-                    "from": {
-                        "startLines": "9,3",
-                        "startColumns": "4,4",
-                        "startOffsets": "382,57",
-                        "endLines": "13,8",
-                        "endColumns": "12,12",
-                        "endOffsets": "657,376"
-                    },
-                    "to": {
-                        "startLines": "357,364",
-                        "startColumns": "4,4",
-                        "startOffsets": "35091,35551",
-                        "endLines": "361,369",
-                        "endColumns": "12,12",
-                        "endOffsets": "35362,35865"
+                        "startLines": "29,30,31",
+                        "startColumns": "4,4,4",
+                        "startOffsets": "1974,2020,2067",
+                        "endColumns": "45,46,50",
+                        "endOffsets": "2015,2062,2113"
                     }
                 },
                 {
@@ -76,20 +40,56 @@
                     }
                 },
                 {
-                    "source": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\EyeOnYouServer\\DevicePosition\\app\\src\\main\\res\\values\\colors.xml",
+                    "source": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\hscctsaiandke\\DevicePosition\\app\\src\\main\\res\\values\\strings.xml",
                     "from": {
-                        "startLines": "4,2,3",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "157,57,105",
-                        "endColumns": "45,46,50",
-                        "endOffsets": "198,99,151"
+                        "startLines": "1,2",
+                        "startColumns": "4,4",
+                        "startOffsets": "17,70",
+                        "endColumns": "51,43",
+                        "endOffsets": "64,109"
                     },
                     "to": {
-                        "startLines": "29,30,31",
-                        "startColumns": "4,4,4",
-                        "startOffsets": "1974,2020,2067",
-                        "endColumns": "45,46,50",
-                        "endOffsets": "2015,2062,2113"
+                        "startLines": "351,352",
+                        "startColumns": "4,4",
+                        "startOffsets": "34703,34755",
+                        "endColumns": "51,43",
+                        "endOffsets": "34750,34794"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\hscctsaiandke\\DevicePosition\\app\\src\\main\\res\\values\\styles.xml",
+                    "from": {
+                        "startLines": "9,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "382,57",
+                        "endLines": "13,8",
+                        "endColumns": "12,12",
+                        "endOffsets": "657,376"
+                    },
+                    "to": {
+                        "startLines": "357,364",
+                        "startColumns": "4,4",
+                        "startOffsets": "35091,35551",
+                        "endLines": "361,369",
+                        "endColumns": "12,12",
+                        "endOffsets": "35362,35865"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\hscctsaiandke\\DevicePosition\\app\\src\\main\\res\\values\\dimens.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "90,149",
+                        "endColumns": "57,55",
+                        "endOffsets": "143,200"
+                    },
+                    "to": {
+                        "startLines": "279,280",
+                        "startColumns": "4,4",
+                        "startOffsets": "29772,29830",
+                        "endColumns": "57,55",
+                        "endOffsets": "29825,29881"
                     }
                 }
             ]

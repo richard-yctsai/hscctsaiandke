@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SocketListener.h"
+#include "MainActivity.h"
 
 SocketListener::SocketListener(SOCKET socket) {
 	recvbuflen = DEFAULT_BUFLEN;
@@ -86,5 +87,12 @@ void SocketListener::HandleMessage(char* xml) {
 		printf("Client sent GetRandomNumber request message\n");
 		if ( sender != NULL )
 			sender->sendRandomNumberResponse();
+	}
+
+	if (strstri(xml, "GetKinectRunPID") != NULL) {
+		PIDRun::setExecutePID(true);
+		printf("Client sent GetKinectRunPID request message\n");
+		if (sender != NULL)
+			sender->sendKinectRunPIDResponse();
 	}
 }

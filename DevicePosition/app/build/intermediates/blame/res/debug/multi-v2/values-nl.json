@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\EyeOnYouServer\\DevicePosition\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-nl\\values-nl.xml",
+            "outputFile": "C:\\Users\\Richard Yi-Chia TSAI\\Desktop\\hscctsaiandke\\DevicePosition\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-nl\\values-nl.xml",
             "map": [
                 {
                     "source": "C:\\Users\\Richard Yi-Chia TSAI\\.gradle\\caches\\transforms-1\\files-1.1\\appcompat-v7-25.1.1.aar\\e6491fd2153d5b318fcc2a54dda5da3b\\res\\values-nl\\values-nl.xml",

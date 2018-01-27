@@ -18,6 +18,7 @@ public:
 	void sendHostnameResponse();
 	void sendMemoryResponse();
 	void sendRandomNumberResponse();
+	void sendKinectRunPIDResponse();
 
 protected:
 	void sendXMLToClient(char* xml);

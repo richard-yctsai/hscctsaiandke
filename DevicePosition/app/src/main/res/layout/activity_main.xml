@@ -27,38 +27,8 @@
         android:layout_height="wrap_content"
         android:textOn="Click to end"
         android:textOff="Click to start recording"
-        android:layout_above="@+id/skb_timestamp"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="43dp" />
-
-    <ToggleButton
-        android:id="@+id/btn_recordPeriod"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textOn="Click to end"
-        android:textOff="Click to start Period recording"
-        android:checked="false"
+        android:layout_marginBottom="92dp"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
-
-    <SeekBar
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/skb_timestamp"
-        android:max="15"
-        android:min="1"
-        android:progress="3"
-        android:layout_above="@+id/btn_recordPeriod"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="TimeStamp (sec):"
-        android:id="@+id/textView"
-        android:layout_above="@+id/skb_timestamp"
         android:layout_alignParentStart="true" />
 
     <TextView
@@ -68,6 +38,6 @@
         android:id="@+id/txv_timestampValue"
         android:layout_alignTop="@+id/textView"
         android:layout_toEndOf="@+id/textView"
-        android:text="3" />
+        android:text="5" />
 
 </RelativeLayout>

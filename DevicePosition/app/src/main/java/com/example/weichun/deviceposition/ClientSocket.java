@@ -34,35 +34,28 @@ public class ClientSocket extends AsyncTask<String, Void, String> {
         serverIP = server;
         serverPort = port;
         clientName = name;
+
     }
 
-    public void sendFile() {
+    public void sendDataString(final String data) {
 
         if (connected) {
             new Thread(new Runnable(){
                 @Override
                 public void run() {
                     try {
-                        String dir_path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/AbsAccCollection/raw_acc.txt";
-                        File myFile = new File (dir_path);
-                        byte[] mybytearray = new byte[(int) myFile.length()];
-                        FileInputStream fis = new FileInputStream(myFile);
-                        BufferedInputStream bis = new BufferedInputStream(fis);
-                        bis.read(mybytearray, 0, mybytearray.length);
+
+                       /* String dir_path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/AbsAccCollection/raw_acc.txt";
+                        File myFile = new File (dir_path);*/
+
+                       /* byte[] mybytearray = data.getBytes();*/
+
+                       /* FileInputStream fis = new FileInputStream(myFile);
+                        BufferedInputStream bis = new BufferedInputStream(fis);*/
+                       /* bis.read(mybytearray, 0, mybytearray.length);*/
                         OutputStream os =  socket.getOutputStream();
-                        System.out.println("Sending...");
-
-
-                        os.write(mybytearray, 0, mybytearray.length);
-                        System.out.println("have been sent");
-                        os.flush();
-                        os.close();
-                        bis.close();
-                        fis.close();
-
-                        socket.close();
-
-                        socket = new Socket(serverIP, serverPort);
+                        os.write(data.getBytes());
+                        System.out.println("data "+data+"have been sent");
                     }
                     catch(IOException e){
                         e.printStackTrace();

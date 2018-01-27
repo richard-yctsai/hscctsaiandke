@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -21,19 +22,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import org.w3c.dom.Text;
+import android.view.KeyEvent;
 
-import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,7 +42,7 @@ import java.util.SimpleTimeZone;
 public class MainActivity extends AppCompatActivity {
     //Client socket set
     private ClientSocket client;
-    private final int PORT = 8221;
+    private final int PORT = 8888;
     private boolean connectedAvailable = false;
     private String defaultName = "";
     private String defaultIP = "";
@@ -65,10 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView text;
     private static ToggleButton btn_record;
-    private static ToggleButton btn_recordPeriod;
-    private static SeekBar skb_timestamp;
-    private static TextView txv_timestampValue;
-    private int timestamp;
 
     private boolean startRec = false;
 
@@ -85,15 +78,12 @@ public class MainActivity extends AppCompatActivity {
         mContext = this.getApplicationContext();
         text = (TextView) findViewById(R.id.log);
         btn_record = (ToggleButton) findViewById(R.id.btn_record);
-        btn_recordPeriod = (ToggleButton) findViewById(R.id.btn_recordPeriod);
-        skb_timestamp = (SeekBar) findViewById(R.id.skb_timestamp);
-        txv_timestampValue = (TextView) findViewById(R.id.txv_timestampValue);
-
         dir_path_arguements = Environment.getExternalStorageDirectory().getAbsolutePath() + "/AbsAccCollection";
         dir_arguements = new File(dir_path_arguements);
         if (!dir_arguements.exists()) {
             dir_arguements.mkdir();
         }
+        //initial default name and IP
         try {
             file_arguements = new File(dir_arguements, "raw_arguements.txt");
             in_arguments = new DataInputStream(new FileInputStream(file_arguements));
@@ -174,7 +164,9 @@ public class MainActivity extends AppCompatActivity {
                         time = formatter.format(curDate);
                         raw = String.valueOf(earthAcc[0]) + "," + String.valueOf(earthAcc[1]) + "," + String.valueOf(earthAcc[2]) + ","
                                 + time + "\n";
-                        out_acc.write(raw.getBytes());
+
+                        client.sendDataString(raw);
+
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -216,14 +208,8 @@ public class MainActivity extends AppCompatActivity {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            try {
-                                out_arguments.close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
                             //建立與client端地連線
-                            connectClient(input.getText().toString());
+                            connectClient();
                             //check if connected
                             if (connectedAvailable == false) //returns true if internet available
                             {
@@ -279,12 +265,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void connectClient(String ip) {
+    private void connectClient() {
         //新增一個ClientSocket為client
-        setClient(new ClientSocket(ip, PORT, defaultName));
+        setClient(new ClientSocket(defaultIP, PORT, defaultName));
         //將client連  線設定為背景執行
         getClient().execute();
         connectedAvailable =true;
+
     }
 
     public void setClient(ClientSocket client) {
@@ -303,116 +290,42 @@ public class MainActivity extends AppCompatActivity {
         calendar = new GregorianCalendar(pdt);
         handler = new Handler();
 
-        timestamp = skb_timestamp.getProgress();
-        skb_timestamp.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                if(i<2){
-                    timestamp = 1;
-                }
-                else{
-                    timestamp = i;
-                }
-                txv_timestampValue.setText(String.valueOf(timestamp));
-            }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
-        btn_recordPeriod.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean isCheck) {
-                if(isCheck){
-                    text.setText("");
-                    skb_timestamp.setClickable(false);
-                    btn_record.setClickable(false);
-                    handler.post(runnable);
-                }
-                else{
-                    //shutdown handler
-                    handler.removeCallbacksAndMessages(null);
-                    startRec=false;
-                    try {
-                        client.disconnect();
-                        out_acc.close();
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    skb_timestamp.setClickable(true);
-                    btn_record.setClickable(true);
-                }
-            }
-        });
-
         btn_record.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     text.setText("");
                     client.checkSocketConnection();
                     startRecording();
-                    skb_timestamp.setClickable(false);
-                    btn_recordPeriod.setClickable(false);
                 } else {
                     endRecording();
-                    btn_recordPeriod.setClickable(true);
-                    skb_timestamp.setClickable(true);
+                    connectClient();
+
                 }
             }
         });
     }
 
     private void startRecording(){
-        startRec = true;
+        try {
+            //initial name
+            String nameTemp = (defaultName + "\n");
+            client.sendDataString(nameTemp);
+            System.out.println("name has been sent");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Date trialTime = new Date();
         calendar.setTime(trialTime);
         text.append(" Start: " + calendar.get(Calendar.HOUR_OF_DAY) + ":" +
                 calendar.get(Calendar.MINUTE) + ":" +
                 calendar.get(Calendar.SECOND));
 
-        //create file
-        try {
-            String dir_path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/AbsAccCollection";
-            File dir = new File(dir_path);
-            if (!dir.exists()) {
-                dir.mkdir();
-            }
-            File file_acc = new File(dir, "raw_acc_buffer.txt");
-            if (file_acc.exists()) {
-                file_acc.delete();
-            }
-            out_acc = new DataOutputStream(new FileOutputStream(file_acc, true));
-
-            //initial name
-            String nameTemp = (defaultName + "\n");
-            //write file
-            out_acc.write(nameTemp.getBytes());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        startRec = true;
     }
     private void endRecording(){
         startRec = false;
-        String dir_path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/AbsAccCollection";
-        File dir = new File(dir_path);
-        try (InputStream in = new FileInputStream(dir_path + "/raw_acc_buffer.txt")) {
-            try (OutputStream out = new FileOutputStream(dir_path + "/raw_acc.txt")) {
-                // Transfer bytes from in to out
-                byte[] buf = new byte[1024];
-                int len;
-                while ((len = in.read(buf)) > 0) {
-                    out.write(buf, 0, len);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        client.disconnect();
 
         Date trialTime = new Date();
         calendar.setTime(trialTime);
@@ -420,29 +333,20 @@ public class MainActivity extends AppCompatActivity {
                 calendar.get(Calendar.MINUTE) + ":" +
                 calendar.get(Calendar.SECOND));
 
-        try {
-            //send file via socket
-            client.sendFile();
-            out_acc.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            if(!startRec){
-                client.checkSocketConnection();
-                startRecording();
-            }
-            else{
-                endRecording();
-                startRecording();
-            }
-            handler.postDelayed(this,timestamp*1000);
-        }
-    };
 
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_POWER) {
+            Log.i("", "Dispath event power");
+            Intent closeDialog = new Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+            sendBroadcast(closeDialog);
+            return true;
+        }
+
+        return super.dispatchKeyEvent(event);
+    }
 
     @Override
     protected void onPause() {

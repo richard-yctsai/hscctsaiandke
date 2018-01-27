@@ -2,74 +2,112 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\25.1.1\jars\classes.jar"
-        jumboMode="false"
-        revision="26.0.1"
-        sha1="c03bf57f358aa10d253f21989e93bcf6014b3b17">
-        <dex dex="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\pre-dexed\debug\classes-543c1075847b9a971ab5f1dbbc394aed4068caed.jar" />
-    </item>
-    <item
-        jar="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\25.1.1\jars\classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="C:\Users\TingYuan\.android\build-cache\8139a19ac55a8af5ae5ab9646426c8982dc1e800\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
         revision="26.0.1"
         sha1="0d191c1a09e4892d059e5ce749e4ad4e08129e35">
-        <dex dex="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\pre-dexed\debug\classes-7fba91fa9f487af33c95f2123854fefb9ab1aa5e.jar" />
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_726016db7f3915fc7fa4a4425f4dc2b8b989b009\classes.dex" />
     </item>
     <item
-        jar="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\exploded-aar\com.android.support\support-v4\25.1.1\jars\classes.jar"
-        jumboMode="false"
-        revision="26.0.1"
-        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
-        <dex dex="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\pre-dexed\debug\classes-81fc69f0559757f33955678f03557fb9ee0ea9f8.jar" />
-    </item>
-    <item
-        jar="C:\Users\TingYuanKeke\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\25.1.1\support-annotations-25.1.1.jar"
-        jumboMode="false"
-        revision="26.0.1"
-        sha1="b59b6ee8d6ecc03e672d253800430343493a6ed8">
-        <dex dex="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\pre-dexed\debug\support-annotations-25.1.1-bb5a6f4876c84ea726f6a040d006695bb0d0cb8b.jar" />
-    </item>
-    <item
-        jar="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\25.1.1\jars\classes.jar"
-        jumboMode="false"
-        revision="26.0.1"
-        sha1="ecb496cc08dd52551fc5ec6db3bc0632e95a89bb">
-        <dex dex="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\pre-dexed\debug\classes-8ff037d004467f59e3f56a4a35dff32f11a24fe3.jar" />
-    </item>
-    <item
-        jar="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\exploded-aar\com.android.support\support-core-ui\25.1.1\jars\classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="C:\Users\TingYuan\.android\build-cache\96bb19c32f65e6023ac1a30c50c8afb93c3fe40b\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
         revision="26.0.1"
         sha1="3e04ac8ca644ea7baddf6fdcf72e15c79e9df94a">
-        <dex dex="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\pre-dexed\debug\classes-b88cfed0023dae5634f284d834878bb93a54ef55.jar" />
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_95c86710201e216ba8ecc61237f90a9dcd64f9bc\classes.dex" />
     </item>
     <item
-        jar="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\exploded-aar\com.android.support\support-media-compat\25.1.1\jars\classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="C:\Users\TingYuan\.android\build-cache\0a1880f18be9396c75101df04fe82e21c96cd0de\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.1"
+        sha1="c03bf57f358aa10d253f21989e93bcf6014b3b17">
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_dc3dc3a94f8a3d16e6d8089566042b26e9c35cb0\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\TingYuan\.android\build-cache\c7dcc507d563c6d7d8f405b58c03bacea1f6660b\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.1"
+        sha1="ecb496cc08dd52551fc5ec6db3bc0632e95a89bb">
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_b5645d9c26294dc8c4ee5411a077165b5db7a149\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\TingYuan\.android\build-cache\79d94fa4750372a224b2b6278c3b2a659c222204\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
         revision="26.0.1"
         sha1="7bde4c34162092e0a77e7f12dc85ed77c484cf5c">
-        <dex dex="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\pre-dexed\debug\classes-6cd5a2f9174c12511dd36ced66ba61f086092b95.jar" />
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_deb747b7e40c4cdf16e196a8bb203356f8f627d0\classes.dex" />
     </item>
     <item
-        jar="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\25.1.1\jars\classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\incremental-classes\debug\instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.1"
+        sha1="d533e59f7c033a66e20c619ab270e83b50eaee68">
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run-bootstrap_41b4f6b04fb3a5e9d4e2482f338b4069904a3fda\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\TingYuan\.android\build-cache\65ccd84d1f9a9e0b059c0b7aa9698af680fbb11a\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
         revision="26.0.1"
         sha1="0fb891e8f0cfba0513043a7bb357513d229ca2cd">
-        <dex dex="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\pre-dexed\debug\classes-77d2c94baa6472fd4a1d0b79b7a3a049374b7f7d.jar" />
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_08046d52050c40fd6c1162e087044b2f2f0cca45\classes.dex" />
     </item>
     <item
-        jar="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\exploded-aar\com.android.support\support-fragment\25.1.1\jars\classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="C:\Users\TingYuan\.android\build-cache\04d5d29b32a993acc6e9634125b8134459bf8752\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.1"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_56ebfe68630913e08bd64432120956932edd8798\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\incremental-runtime-classes\debug\instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.1"
+        sha1="3be78ebc2706b2e1fe2f12d5726887a92d6c183b">
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10000\instant-run_08afd6a696e08a7820c9edabb8cae1013327d55a\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\TingYuan\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\25.1.1\support-annotations-25.1.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="26.0.1"
+        sha1="b59b6ee8d6ecc03e672d253800430343493a6ed8">
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10\support-annotations-25.1.1_e64740a33738d8ff9ee85eec5b0c12d9670f6d36\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="C:\Users\TingYuan\.android\build-cache\4515400c8b987530aef2b248a3f23dd9a028be78\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
         revision="26.0.1"
         sha1="e2719c102dca3a7a5b02ce07f769362da6ddb4ab">
-        <dex dex="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\pre-dexed\debug\classes-f636a2fcddb2779a9e2288c30a3a70a613535211.jar" />
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_7007c960dfb4510274ca54ccd0260f06f3074acd\classes.dex" />
     </item>
     <item
-        jar="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\exploded-aar\com.android.support\support-compat\25.1.1\jars\classes.jar"
-        jumboMode="false"
+        is-multidex="true"
+        jar="C:\Users\TingYuan\.android\build-cache\e817f26d39afdea570aa5b995cb8fe229d16d9cf\output\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
         revision="26.0.1"
         sha1="02741d05d4b697fba5e279e9881aaa1da0ca7c7f">
-        <dex dex="C:\Users\TingYuanKeke\Desktop\DevicePosition\app\build\intermediates\pre-dexed\debug\classes-60dc1e07657dd317f2dc6ef98e905559b819e69d.jar" />
+        <dex dex="C:\Users\TingYuan\Desktop\AI project\DevicePosition\app\build\intermediates\transforms\dex\debug\folders\1000\10\classes_a1876766023eaa5389836c6141450ab0035d7b27\classes.dex" />
     </item>
 
 </items>

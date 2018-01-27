@@ -1,4 +1,4 @@
-#Thu Nov 30 14:04:03 CST 2017
-base.0=C\:\\Users\\Richard Yi-Chia TSAI\\Desktop\\EyeOnYouServer\\DevicePosition\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\22
-path.0=classes.dex
+#Fri Jan 26 20:49:55 CST 2018
+base.0=C\:\\Users\\TingYuan\\Desktop\\AI project\\DevicePosition\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\5\\slice_3
 renamed.0=classes.dex
+file.0=C\:\\Users\\TingYuan\\Desktop\\AI project\\DevicePosition\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\5\\slice_3\\classes.dex

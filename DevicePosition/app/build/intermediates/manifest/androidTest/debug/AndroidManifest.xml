@@ -3,7 +3,7 @@
     package="com.example.weichun.deviceposition.test" >
 
     <uses-sdk
-        android:minSdkVersion="21"
+        android:minSdkVersion="20"
         android:targetSdkVersion="26" />
 
     <instrumentation
