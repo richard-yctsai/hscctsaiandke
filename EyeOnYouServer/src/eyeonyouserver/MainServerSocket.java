@@ -20,8 +20,8 @@ public class MainServerSocket {
 	private Timer timerStartPairing = new Timer();
 	private Timer timerEndPairing = new Timer();
 	public static boolean isPairing = false;
-	public int collectInterval = 5000;
-	public int pairingInterval = 1000;
+	public int collectInterval = 3000;
+	public int pairingInterval =100;
 	
 	public MainServerSocket(int port) throws IOException {
 		this.port = port;

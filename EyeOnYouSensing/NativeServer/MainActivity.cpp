@@ -39,7 +39,7 @@ using namespace std;
 float tmpWR_JointPos[3];
 
 const int Max_Char = 500;
-char cmdLinePID[Max_Char] = "java -cp \"C:/Users/Richard Yi-Chia TSAI/Desktop/eclipse/JAR/*;C:/Users/Richard Yi-Chia TSAI/Desktop/EyeOnYouRobot_Backup01142018/EyeOnYouPID/bin\" pairing.Demo";
+char cmdLinePID[Max_Char] = "java -cp \"C:/Users/Richard Yi-Chia TSAI/Desktop/eclipse/JAR/*;C:/Users/Richard Yi-Chia TSAI/Desktop/hscctsaiandke/EyeOnYouPID/bin\" pairing.Demo";
 //char cmdLineRobot[Max_Char] = "java -cp \"C:/Users/Richard Yi-Chia TSAI/Desktop/eclipse/JAR/*;C:/Users/Richard Yi-Chia TSAI/Desktop/EyeOnYouiRobot/bin\" roombacomm.eyeonyourobot.EyeOnYouRobotTracking COM3 OI ";
 //char cmdLineDriveRobot[Max_Char] = "";
 
@@ -485,10 +485,10 @@ void robotTracking(string ID, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper
 	pCMapper->MapCameraPointToColorSpace(rJ1.Position, &ptJ1);
 
 	if ((ptJ1.X >= 0 && ptJ1.X <= rImg.cols) && (ptJ1.Y >= 0 && ptJ1.Y <= rImg.rows)) {
-		putText(rImg, ID, cv::Point(ptJ1.X, ptJ1.Y - 50), 0, 3, cv::Scalar(255, 0, 0), 6);	// draw IDs of each user
-		putText(rImg, to_string(rJ1.Position.X), cv::Point(ptJ1.X, ptJ1.Y - 300), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw X axis of each user
-		putText(rImg, to_string(rJ1.Position.Y), cv::Point(ptJ1.X, ptJ1.Y - 200), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw Y axis of each user
-		putText(rImg, to_string(rJ1.Position.Z), cv::Point(ptJ1.X, ptJ1.Y - 100), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw Z axis of each user
+		//putText(rImg, ID, cv::Point(ptJ1.X, ptJ1.Y - 50), 0, 3, cv::Scalar(255, 0, 0), 6);	// draw IDs of each user
+		//putText(rImg, to_string(rJ1.Position.X), cv::Point(ptJ1.X, ptJ1.Y - 300), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw X axis of each user
+		//putText(rImg, to_string(rJ1.Position.Y), cv::Point(ptJ1.X, ptJ1.Y - 200), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw Y axis of each user
+		//putText(rImg, to_string(rJ1.Position.Z), cv::Point(ptJ1.X, ptJ1.Y - 100), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw Z axis of each user
 	}
 
 	if ( (rJ1.Position.Z <= 4 && rJ1.Position.Z >= 3) || (rJ1.Position.X <= 0.5 && rJ1.Position.X >= -0.5) ) {
@@ -523,7 +523,7 @@ void DrawIdentity(string ID, string NAME, cv::Mat& rImg, const Joint& rJ1, ICoor
 
 	if ((ptJ1.X >= 0 && ptJ1.X <= rImg.cols) && (ptJ1.Y >= 0 && ptJ1.Y <= rImg.rows)) {
 		putText(rImg, ID, cv::Point(ptJ1.X, ptJ1.Y - 150), 0, 3, cv::Scalar(255, 0, 0), 6);	// draw IDs of each user
-		putText(rImg, NAME, cv::Point(ptJ1.X, ptJ1.Y - 200), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw NAMEs of each user
+		putText(rImg, NAME, cv::Point(ptJ1.X, ptJ1.Y - 100), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw NAMEs of each user
 		putText(rImg, to_string(ptJ1.X), cv::Point(0, 120), 0, 1, cv::Scalar(0, 255, 255), 3);
 		putText(rImg, to_string(ptJ1.Y - 200), cv::Point(0, 150), 0, 1, cv::Scalar(0, 255, 255), 3);
 	}
