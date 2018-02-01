@@ -1,7 +1,19 @@
 #include <stdlib.h>
 #include "PIDRun.h"
 
+bool PIDRun::keepSkeleton = false;
 bool PIDRun::executePID = false;
+
+bool PIDRun::getKeepSkeleton()
+{
+	return keepSkeleton;
+}
+
+void PIDRun::setKeepSkeleton(bool rec_keepSkeleton)
+{
+	keepSkeleton = rec_keepSkeleton;
+}
+
 
 bool PIDRun::getExecutePID()
 {

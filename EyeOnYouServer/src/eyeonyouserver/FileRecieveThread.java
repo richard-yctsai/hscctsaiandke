@@ -16,6 +16,7 @@ public class FileRecieveThread extends Thread {
 	protected String whoSent;
 	protected String FILE_TO_RECEIVED;
 	protected String FILE_TO_PAIRING;
+	protected String FILE_TO_PAIRING_CVS;
 	
 	protected boolean fileCleaned= true;
 
@@ -45,6 +46,7 @@ public class FileRecieveThread extends Thread {
 			whoSent = dis.readLine();
 			FILE_TO_RECEIVED = rootDir + "/IMUData/" + whoSent + "_buffer.txt";
 			FILE_TO_PAIRING = rootDir + "/IMUData/" + whoSent + ".txt";
+			FILE_TO_PAIRING_CVS =rootDir + "/IMUData/" + whoSent + ".csv";
 			fos = new FileOutputStream(FILE_TO_RECEIVED);
 			bos = new BufferedOutputStream(fos);
 
@@ -56,7 +58,7 @@ public class FileRecieveThread extends Thread {
 					bos.write(mybytearray, 0, lenBuffer);
 					
 					if(MainServerSocket.isPairing == true) {
-						System.out.println("\n==========\nThe EyeOnYouServer is performing PID.\n==========\n");
+						System.out.println("\n==========\nThe EyeOnYouServer is collecting inertial data from UEs.\n==========\n");
 						while(MainServerSocket.isPairing == true) {
 							if(fileCleaned == false){
 								bos.close();
@@ -90,7 +92,10 @@ public class FileRecieveThread extends Thread {
 			} while (dis.readLine() != null);
 
 			System.out.println(whoSent + " just turn off the sending process.");
-
+			boolean txtDelete = new File(FILE_TO_PAIRING).delete();
+			boolean csvDelete = new File (FILE_TO_PAIRING_CVS).delete();
+			System.out.println(whoSent+".txt file has been deleted");
+			
 			fos.close();
 			dis.close();
 

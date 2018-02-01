@@ -16,6 +16,7 @@ protected:
 	BOOL listening;
 	SocketSender* sender;
 	SocketListener* listener;
+	static bool runPID;
 
 public:
 	ServerSocketRunPID();
@@ -23,5 +24,7 @@ public:
 	SocketListener* getListener();
 	HANDLE getThread();
 	DWORD m_ThreadFunc();
+	static void setrunPID(bool rec_runPID);
+	static bool getrunPID();
 };
 

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "ServerSocketRunPID.h"
 
+bool ServerSocketRunPID::runPID = false;
+
 ServerSocketRunPID::ServerSocketRunPID() {
 	ListenSocket = INVALID_SOCKET;
 	ClientSocket = INVALID_SOCKET;
@@ -115,3 +117,12 @@ DWORD ServerSocketRunPID::m_ThreadFunc() {
 	return 0;
 }
 
+void ServerSocketRunPID::setrunPID(bool rec_runPID)
+{
+	runPID = rec_runPID;
+}
+
+bool ServerSocketRunPID::getrunPID()
+{
+	return runPID;
+}

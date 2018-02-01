@@ -44,6 +44,9 @@
     <ClCompile Include="PIDRun.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MainBackup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CThread.h">

@@ -89,10 +89,10 @@ void SocketListener::HandleMessage(char* xml) {
 			sender->sendRandomNumberResponse();
 	}
 
-	if (strstri(xml, "GetKinectRunPID") != NULL) {
-		PIDRun::setExecutePID(true);
-		printf("Client sent GetKinectRunPID request message\n");
+	if (strstri(xml, "GetKinectKeepSkeleton") != NULL) {
+		PIDRun::setKeepSkeleton(true);
+		printf("Client sent GetKinectKeepSkeleton request message\n");
 		if (sender != NULL)
-			sender->sendKinectRunPIDResponse();
+			sender->sendKinectKeepSkeletonResponse();
 	}
 }

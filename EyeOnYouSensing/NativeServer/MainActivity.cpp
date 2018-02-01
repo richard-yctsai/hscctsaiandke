@@ -8,8 +8,6 @@
 
 // Standard Library
 #include "stdafx.h"
-#include "ServerSocket.h"
-#include "ServerSocketRunPID.h"
 
 #pragma comment(lib, "ws2_32.lib") // link winsock2
 #include <thread>
@@ -82,7 +80,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	// 0. Initialize server socket to conduct interprocess communication with java-based robot
 	HANDLE threadRobot = CreateThread(NULL, 0, DriveRobotThreadFunc, NULL, 0, NULL);
 	HANDLE threadServer = CreateThread(NULL, 0, RunPIDThreadFunc, NULL, 0, NULL);
-	int WaitForSocket = 3;
+	int WaitForSocket = 1;
 	while (WaitForSocket > 0) {
 		cout << WaitForSocket << endl;
 		WaitForSocket--;
@@ -222,7 +220,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	sprintf_s(start_time_str, 13, "%02d:%02d:%02d:%03d", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
 
 	// count down to start
-	int WaitForKinect = 3;
+	int WaitForKinect = 1;
 	while (WaitForKinect > 0) {
 		cout << WaitForKinect << endl;
 		WaitForKinect--;
@@ -328,8 +326,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 					if (i == iBodyCount - 1)
 					{
-					realiBodyCount = tempiBodyCount;
-					tempiBodyCount = 0;
+						realiBodyCount = tempiBodyCount;
+						tempiBodyCount = 0;
 					}
 				}
 
@@ -339,51 +337,73 @@ int _tmain(int argc, _TCHAR* argv[])
 					RobotDrive::setDriveunit(0);
 				}
 
-				/*if ((step % 20 == 0) && realiBodyCount != lastiBodyCount)
-				{
-				cout << "People counts CHANGE: right now ->" << realiBodyCount << " last time -> " << lastiBodyCount << endl;
-				csvfile.close();
-				systemCallCmd(cmdLinePID);
-				csvfile.open(csvfilename);
-				}*/
+				//if (step%120 == 0)
+				//{
+				////cout << "people counts change: right now ->" << realibodycount << " last time -> " << lastibodycount << endl;
+				//csvfile.close();
+				//PIDRun::systemCallCmd(cmdLinePID);
+				//csvfile.open(csvfilename);
+				//}
 
 				//if (step != 0 && (step % 30 == 0) && PIDRun::getExecutePID() == true)
-				if (PIDRun::getExecutePID() == true)
+				// 1. csvfile.close();
+				//if (PIDRun::getKeepSkeleton() == true)
+				if (step % 120 == 0)
 				{
 					lastiBodyCount = realiBodyCount;
 					cout << "People counts: " << realiBodyCount << endl;
-
+				
+				
 					csvfile.close();
-					PIDRun::systemCallCmd(cmdLinePID);
-					PIDRun::setExecutePID(false);
-					csvfile.open(csvfilename);
-
-					resultfile.open(resultfilename);
-					if (resultfile.is_open()) {
-						// read ID and position of head joint and then putText
-						getline(resultfile, line, '\n');
-						resultfile.close();
-					}
-
-					istringstream templine(line);
-					string data, nameReadFile;
-					double x, y;
-					int idx = 0;
-					while (getline(templine, data, ',')) {
-						if (idx % 4 == 0)
-							VotingPID::setID(data.c_str());
-						else if (idx % 4 == 1)
-							nameReadFile = data.c_str();
-						else if (idx % 4 == 2)
-							x = atof(data.c_str());
-						else
-						{
-							y = atof(data.c_str()); 
-							VotingPID::setnameVotingWithIndex(VotingPID::getID(), VotingPID::votingOfPID(VotingPID::getID(), nameReadFile));
-						}
-						idx += 1;
-					}
+					//this_thread::sleep_for(chrono::milliseconds(1000));
+					std::ifstream fin(csvfilename);
+					string csvfilenamepairing = "C:/Users/Public/Data/KINECTData/VSFile_Pairing.csv";
+					std::ofstream fout(csvfilenamepairing);
+					std::string line;
+					while (std::getline(fin, line, '.')) fout << line << '\n';
+					cout << "buffer complete!!!!!!!!!!!!!" << endl;
+				
+					PIDRun::setExecutePID(true);
+					//PIDRun::systemCallCmd(cmdLinePID);				
 				}
+
+				//if (step != 0 && (step % 30 == 0) && PIDRun::getExecutePID() == true)
+				//if (PIDRun::getExecutePID() == true)
+				//{
+				//	lastiBodyCount = realiBodyCount;
+				//	cout << "People counts: " << realiBodyCount << endl;
+
+				//	csvfile.close();
+				//	PIDRun::systemCallCmd(cmdLinePID);
+				//	PIDRun::setExecutePID(false);
+				//	csvfile.open(csvfilename);
+
+				//	resultfile.open(resultfilename);
+				//	if (resultfile.is_open()) {
+				//		// read ID and position of head joint and then putText
+				//		getline(resultfile, line, '\n');
+				//		resultfile.close();
+				//	}
+
+				//	istringstream templine(line);
+				//	string data, nameReadFile;
+				//	double x, y;
+				//	int idx = 0;
+				//	while (getline(templine, data, ',')) {
+				//		if (idx % 4 == 0)
+				//			VotingPID::setID(data.c_str());
+				//		else if (idx % 4 == 1)
+				//			nameReadFile = data.c_str();
+				//		else if (idx % 4 == 2)
+				//			x = atof(data.c_str());
+				//		else
+				//		{
+				//			y = atof(data.c_str());
+				//			VotingPID::setnameVotingWithIndex(VotingPID::getID(), VotingPID::votingOfPID(VotingPID::getID(), nameReadFile));
+				//		}
+				//		idx += 1;
+				//	}
+				//}
 			}
 			else
 			{
@@ -491,7 +511,7 @@ void robotTracking(string ID, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper
 		//putText(rImg, to_string(rJ1.Position.Z), cv::Point(ptJ1.X, ptJ1.Y - 100), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw Z axis of each user
 	}
 
-	if ( (rJ1.Position.Z <= 4 && rJ1.Position.Z >= 3) || (rJ1.Position.X <= 0.5 && rJ1.Position.X >= -0.5) ) {
+	if ((rJ1.Position.Z <= 4 && rJ1.Position.Z >= 3) || (rJ1.Position.X <= 0.5 && rJ1.Position.X >= -0.5)) {
 		RobotDrive::setDrivetowhere("stop");
 		RobotDrive::setDriveunit(0);
 	}

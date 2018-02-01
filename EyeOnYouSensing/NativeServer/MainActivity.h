@@ -7,6 +7,8 @@
 #include "PIDRun.h"
 #include "VotingPID.h"
 #include "KinectSetup.h"
+#include "ServerSocket.h"
+#include "ServerSocketRunPID.h"
 
 using namespace std;
 

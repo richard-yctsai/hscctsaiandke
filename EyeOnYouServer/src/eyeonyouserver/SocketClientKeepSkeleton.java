@@ -3,13 +3,29 @@ package eyeonyouserver;
 
 import java.io.*;
 import java.net.*;
+
+import pairing.PID;
 /**
  * @author Richard Yi-Chia TSAI, TingYuan
  */
-public class SocketClientRunPID {
+
+
+
+public class SocketClientKeepSkeleton {
     private Listener listener = null;
     private Sender sender = null;
     public boolean connected = false;
+    
+    
+    class StartPairingThread extends Thread {
+
+        public void run() {
+        	System.out.println("\n==========\nThe EyeOnYouServer is performing PID.\n==========\n");
+        	PID.startPairing();
+        }
+
+
+    }
     
     // Listener
     class Listener extends Thread {
@@ -29,15 +45,23 @@ public class SocketClientRunPID {
             try {
                 BufferedReader reader =
                     new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
+                	
                 while ( listening ) {
+                	System.out.println("keep listening c++ sensing");
                     String xml = reader.readLine();
                     if ( xml == null ) {
                         // Connection lost
                         return;
                     }
-
+                    
                     System.out.println("XML: " + xml + "\n\n");
+                    // Listen runPID command sent from Sensing program because it finished preparing the VSFile.csv
+                    if(xml.equals("runPID")) {
+                    	
+                    	(new Thread(new StartPairingThread())).start();;
+                    	
+                    	
+                    }
 //                    String drivetemp[] = xml.split(",");
 //                    DriveBasedOnKinect.DriveAction(drivetemp[0], Integer.parseInt(drivetemp[1]));
                     
@@ -78,7 +102,7 @@ public class SocketClientRunPID {
         static final String HOSTNAME = "<Request><Name>GetHostname</Name></Request>";
         static final String MEMORY = "<Request><Name>GetMemory</Name></Request>";
         static final String RANDOM_NUM = "<Request><Name>GetRandomNumber</Name></Request>";
-        static final String RUN_PID = "<Request><Name>GetKinectRunPID</Name></Request>";
+        static final String GET_SKELETON = "<Request><Name>GetKinectKeepSkeleton</Name></Request>";
         
         Socket conn;
         BufferedOutputStream os = null;
@@ -106,8 +130,9 @@ public class SocketClientRunPID {
             serializeAndSendMessage(RANDOM_NUM);
         }
         
-        public void requestKinectRunPID() {
-            serializeAndSendMessage(RUN_PID);
+        public void requestKinectKeepSkeleton() {
+        	System.out.println("\n==========\nThe EyeOnYouSensing is collecting skeleton data by Kinect.\n==========\n");
+            serializeAndSendMessage(GET_SKELETON);
         }
 
         private void serializeAndSendMessage(String msg) {
@@ -122,7 +147,7 @@ public class SocketClientRunPID {
     }
 
     // SocketClientRunPID Constructor
-    public SocketClientRunPID(String IPAddress) {
+    public SocketClientKeepSkeleton(String IPAddress) {
         try {
             // Connect to the server at the given address on port 8081
             if ( IPAddress == null || IPAddress.length() == 0 )
@@ -155,8 +180,8 @@ public class SocketClientRunPID {
         sender.requestRandomNumber();
     }
     
-    public void requestKinectRunPID() {
-        sender.requestKinectRunPID();
+    public void requestKinectKeepSkeleton() {
+        sender.requestKinectKeepSkeleton();
     }
 }
 

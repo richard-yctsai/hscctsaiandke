@@ -8,20 +8,21 @@ import java.util.concurrent.Executors;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import eyeonyouserver.SocketClientRunPID;
+import eyeonyouserver.SocketClientKeepSkeleton;
+import pairing.PID;
 
 public class MainServerSocket {
 	private int port;
 	private ServerSocket servsock;
 	
-	private static SocketClientRunPID clientRunPID = null;
+	private static SocketClientKeepSkeleton clientRunPID = null;
     static String ipaddress = "localhost";
     
 	private Timer timerStartPairing = new Timer();
 	private Timer timerEndPairing = new Timer();
 	public static boolean isPairing = false;
 	public int collectInterval = 3000;
-	public int pairingInterval =100;
+	public int pairingInterval =1000;
 	
 	public MainServerSocket(int port) throws IOException {
 		this.port = port;
@@ -31,13 +32,13 @@ public class MainServerSocket {
 	}
 
 	public void run() {
-		clientRunPID = new SocketClientRunPID(ipaddress);
+		clientRunPID = new SocketClientKeepSkeleton(ipaddress);
 		
 		timerStartPairing.scheduleAtFixedRate(new TimerTask() {
 			 @Override
 			 public void run() {
 				 isPairing = true;
-				 clientRunPID.requestKinectRunPID();
+				 clientRunPID.requestKinectKeepSkeleton();
 				 }
 			 }, 500, collectInterval);
 		 timerEndPairing.scheduleAtFixedRate(new TimerTask() {
