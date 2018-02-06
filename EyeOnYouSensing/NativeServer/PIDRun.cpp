@@ -3,6 +3,7 @@
 
 bool PIDRun::keepSkeleton = false;
 bool PIDRun::executePID = false;
+bool PIDRun::tagProfile = false;
 
 bool PIDRun::getKeepSkeleton()
 {
@@ -14,7 +15,6 @@ void PIDRun::setKeepSkeleton(bool rec_keepSkeleton)
 	keepSkeleton = rec_keepSkeleton;
 }
 
-
 bool PIDRun::getExecutePID()
 {
 	return executePID;
@@ -25,8 +25,17 @@ void PIDRun::setExecutePID(bool rec_executePID)
 	executePID = rec_executePID;
 }
 
-void PIDRun::systemCallCmd(char* cmd)
+bool PIDRun::getTagProfile()
 {
-	system(cmd);
+	return tagProfile;
 }
 
+void PIDRun::setTagProfile(bool rec_tagProfile)
+{
+	tagProfile = rec_tagProfile;
+}
+
+//void PIDRun::systemCallCmd(char* cmd)
+//{
+//	system(cmd);
+//}

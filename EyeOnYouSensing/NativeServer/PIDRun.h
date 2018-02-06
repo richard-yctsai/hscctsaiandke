@@ -7,6 +7,7 @@ class PIDRun {
 protected:
 	static bool keepSkeleton;
 	static bool executePID;
+	static bool tagProfile;
 
 public:
 	static bool getKeepSkeleton();
@@ -15,7 +16,10 @@ public:
 	static bool getExecutePID();
 	static void setExecutePID(bool rec_executePID);
 	
-	static void systemCallCmd(char* cmd);
+	static bool getTagProfile();
+	static void setTagProfile(bool rec_tagProfile);
+
+	//static void systemCallCmd(char* cmd);
 };
 
 #endif

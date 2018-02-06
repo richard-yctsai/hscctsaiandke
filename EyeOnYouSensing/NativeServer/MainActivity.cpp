@@ -199,7 +199,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// file output stream
 	ofstream csvfile;
-	string csvfilename = "C:/Users/Public/Data/KINECTData/VSFile.csv";
+	string csvfilename = "C:/Users/Public/Data/KINECTData/VSFile_Buffer.csv";
 	csvfile.open(csvfilename);
 
 	// read head coordinate and id
@@ -347,63 +347,51 @@ int _tmain(int argc, _TCHAR* argv[])
 
 				//if (step != 0 && (step % 30 == 0) && PIDRun::getExecutePID() == true)
 				// 1. csvfile.close();
-				//if (PIDRun::getKeepSkeleton() == true)
-				if (step % 120 == 0)
+				if (PIDRun::getKeepSkeleton() == true)
 				{
 					lastiBodyCount = realiBodyCount;
-					cout << "People counts: " << realiBodyCount << endl;
+					/*cout << "People counts: " << realiBodyCount << endl;*/
 				
-				
+					//save buffer file
 					csvfile.close();
-					//this_thread::sleep_for(chrono::milliseconds(1000));
-					std::ifstream fin(csvfilename);
-					string csvfilenamepairing = "C:/Users/Public/Data/KINECTData/VSFile_Pairing.csv";
-					std::ofstream fout(csvfilenamepairing);
-					std::string line;
-					while (std::getline(fin, line, '.')) fout << line << '\n';
+					// Create new file and from vsfile_Buffer.csv
+					ifstream fin(csvfilename);
+					string csvfilenamepairing = "c:/users/public/data/kinectdata/VSFile.csv";
+					ofstream fout(csvfilenamepairing);
+					string line;
+					while (getline(fin, line)) fout << line << '\n';
 					cout << "buffer complete!!!!!!!!!!!!!" << endl;
 				
+					PIDRun::setKeepSkeleton(false);
 					PIDRun::setExecutePID(true);
-					//PIDRun::systemCallCmd(cmdLinePID);				
+					csvfile.open(csvfilename);			
 				}
 
-				//if (step != 0 && (step % 30 == 0) && PIDRun::getExecutePID() == true)
-				//if (PIDRun::getExecutePID() == true)
-				//{
-				//	lastiBodyCount = realiBodyCount;
-				//	cout << "People counts: " << realiBodyCount << endl;
-
-				//	csvfile.close();
-				//	PIDRun::systemCallCmd(cmdLinePID);
-				//	PIDRun::setExecutePID(false);
-				//	csvfile.open(csvfilename);
-
-				//	resultfile.open(resultfilename);
-				//	if (resultfile.is_open()) {
-				//		// read ID and position of head joint and then putText
-				//		getline(resultfile, line, '\n');
-				//		resultfile.close();
-				//	}
-
-				//	istringstream templine(line);
-				//	string data, nameReadFile;
-				//	double x, y;
-				//	int idx = 0;
-				//	while (getline(templine, data, ',')) {
-				//		if (idx % 4 == 0)
-				//			VotingPID::setID(data.c_str());
-				//		else if (idx % 4 == 1)
-				//			nameReadFile = data.c_str();
-				//		else if (idx % 4 == 2)
-				//			x = atof(data.c_str());
-				//		else
-				//		{
-				//			y = atof(data.c_str());
-				//			VotingPID::setnameVotingWithIndex(VotingPID::getID(), VotingPID::votingOfPID(VotingPID::getID(), nameReadFile));
-				//		}
-				//		idx += 1;
-				//	}
-				//}
+				// Read result.csv to tag profile on top of the head
+				if (PIDRun::getTagProfile() == true) {
+					resultfile.open(resultfilename);
+					if (resultfile.is_open()) {
+						// read ID and position of head joint and then putText
+						getline(resultfile, line, '\n');
+						resultfile.close();
+					}
+					istringstream templine(line);
+					string data, nameReadFile;
+					double x, y;
+					int idx = 0;
+					while (getline(templine, data, ',')) {
+						
+						if (idx % 2 == 0) {
+							VotingPID::setID(data.c_str());
+						}
+						else if (idx % 2 == 1) {
+							nameReadFile = data.c_str();
+							VotingPID::setnameVotingWithIndex(VotingPID::getID(), VotingPID::votingOfPID(VotingPID::getID(), nameReadFile));
+						}
+						idx += 1;
+					}
+					PIDRun::setTagProfile(false);
+				}
 			}
 			else
 			{

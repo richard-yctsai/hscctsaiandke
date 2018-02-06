@@ -11,7 +11,7 @@ import pairing.PID;
 
 
 
-public class SocketClientKeepSkeleton {
+public class SocketClientWithSensing {
     private Listener listener = null;
     private Sender sender = null;
     public boolean connected = false;
@@ -20,7 +20,7 @@ public class SocketClientKeepSkeleton {
     class StartPairingThread extends Thread {
 
         public void run() {
-        	System.out.println("\n==========\nThe EyeOnYouServer is performing PID.\n==========\n");
+        	System.out.println("\n==========\n3. The EyeOnYouServer is performing PID.\n==========\n");
         	PID.startPairing();
         }
 
@@ -47,37 +47,18 @@ public class SocketClientKeepSkeleton {
                     new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 	
                 while ( listening ) {
-                	System.out.println("keep listening c++ sensing");
+//                	System.out.println("Keep listening c++ sensing");
                     String xml = reader.readLine();
                     if ( xml == null ) {
                         // Connection lost
                         return;
                     }
                     
-                    System.out.println("XML: " + xml + "\n\n");
+                    System.out.println("XML sent from C++: " + xml + "\n\n");
                     // Listen runPID command sent from Sensing program because it finished preparing the VSFile.csv
                     if(xml.equals("runPID")) {
-                    	
                     	(new Thread(new StartPairingThread())).start();;
-                    	
-                    	
                     }
-//                    String drivetemp[] = xml.split(",");
-//                    DriveBasedOnKinect.DriveAction(drivetemp[0], Integer.parseInt(drivetemp[1]));
-                    
-//                    // Hand off to the UI
-//                    if ( xml.indexOf("HostnameResponse") != -1 ) {
-//                    	System.out.println(xml);
-////                    	viewer.onHostnameResponse(xml);
-//                    }
-//                    else if ( xml.indexOf("MemoryResponse") != -1 ) {
-//                    	System.out.println(xml);
-////                      viewer.onMemoryResponse(xml);
-//                    }
-//                    else if ( xml.indexOf("RandomNumberResponse") != -1 ) {
-//                    	System.out.println(xml);
-////                      viewer.onRandomNumberResponse(xml);
-//                    }
                 }
             }
             catch ( StreamCorruptedException sce) {
@@ -103,6 +84,7 @@ public class SocketClientKeepSkeleton {
         static final String MEMORY = "<Request><Name>GetMemory</Name></Request>";
         static final String RANDOM_NUM = "<Request><Name>GetRandomNumber</Name></Request>";
         static final String GET_SKELETON = "<Request><Name>GetKinectKeepSkeleton</Name></Request>";
+        static final String TAG_PROFILE = "<Request><Name>GetKinectTagProfile</Name></Request>";
         
         Socket conn;
         BufferedOutputStream os = null;
@@ -131,8 +113,12 @@ public class SocketClientKeepSkeleton {
         }
         
         public void requestKinectKeepSkeleton() {
-        	System.out.println("\n==========\nThe EyeOnYouSensing is collecting skeleton data by Kinect.\n==========\n");
+        	System.out.println("\n==========\n1. The EyeOnYouSensing is collecting skeleton data by Kinect.\n==========\n");
             serializeAndSendMessage(GET_SKELETON);
+        }
+        public void requestKinectTagProfile() {
+        	System.out.println("\n==========\n1. The EyeOnYouSensing is tagging name (PID result) on respective skeletons.\n==========\n");
+            serializeAndSendMessage(TAG_PROFILE);
         }
 
         private void serializeAndSendMessage(String msg) {
@@ -147,7 +133,7 @@ public class SocketClientKeepSkeleton {
     }
 
     // SocketClientRunPID Constructor
-    public SocketClientKeepSkeleton(String IPAddress) {
+    public SocketClientWithSensing(String IPAddress) {
         try {
             // Connect to the server at the given address on port 8081
             if ( IPAddress == null || IPAddress.length() == 0 )
@@ -182,6 +168,10 @@ public class SocketClientKeepSkeleton {
     
     public void requestKinectKeepSkeleton() {
         sender.requestKinectKeepSkeleton();
+    }
+
+    public void requestKinectTagProfile() {
+        sender.requestKinectTagProfile();
     }
 }
 

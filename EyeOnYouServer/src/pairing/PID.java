@@ -20,13 +20,15 @@ import preprocess.ReadData;
 import preprocess.TurnMag;
 import scoring.FusionAlgo;
 
+import eyeonyouserver.MainServerSocket;
+
 public class PID {
 	/***
 	 * @author PID class is transformed from WeiChun's EyeOnYou Demo code.
 	 */
 	public static void startPairing() {
-		int framesOfSkeletonSegment = 39*8/10; // 13 samples in 1 seconds
-		int framesOfInnertialSegment = 300*8/10; // 100 samples in 1 seconds
+		int framesOfSkeletonSegment = 3*16*8/10; // 13 samples in 1 seconds
+		int framesOfInnertialSegment = 3*100*8/10; // 100 samples in 1 seconds
 		String rootDir = "C:/Users/Public/Data";
 		ArrayList<String> users = new ArrayList<String>();
 		ArrayList<Integer> usersID = new ArrayList<Integer>();
@@ -119,24 +121,26 @@ public class PID {
 			}
 			
 			try {
-				String[] IDCoordinate = new String[skeletonIDs.size() * 4];
+				String[] IDCoordinate = new String[skeletonIDs.size() * 2];
 //				CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv", true), ',', CSVWriter.NO_QUOTE_CHARACTER);
 				CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);
-				for (int k = t * framesOfSkeletonSegment; k < (t+1) * framesOfSkeletonSegment; k++) {
+//				for (int k = t * framesOfSkeletonSegment; k < (t+1) * framesOfSkeletonSegment; k++) {
 					for (int i = 0; i < skeletonIDs.size(); i++) {
 						if (match[i] >= 0) {
-							IDCoordinate[i*4] = String.valueOf(usersID.get(i));
-							IDCoordinate[i*4 + 1] = users.get(match[i]);
+							IDCoordinate[i*2] = String.valueOf(usersID.get(i));
+							IDCoordinate[i*2 + 1] = users.get(match[i]);
 						} else {
-							IDCoordinate[i*4] = String.valueOf(usersID.get(i));
-							IDCoordinate[i*4 + 1] = "Unknown";
+							IDCoordinate[i*2] = String.valueOf(usersID.get(i));
+							IDCoordinate[i*2 + 1] = "Unknown";
 						}
-						IDCoordinate[i*4 + 2] = String.valueOf(bodyHead.get(i).get(k).getX());
-						IDCoordinate[i*4 + 3] = String.valueOf(bodyHead.get(i).get(k).getY());
+//						IDCoordinate[i*4 + 2] = String.valueOf(bodyHead.get(i).get(k).getX());
+//						IDCoordinate[i*4 + 3] = String.valueOf(bodyHead.get(i).get(k).getY());
 					}
 					cw.writeNext(IDCoordinate);
-				}
+//				}
 				cw.close();
+				// Complete yielding the pairing result.csv and request Kinect to perform tagging profile name.
+				MainServerSocket.clientRunPID.requestKinectTagProfile();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -56,10 +56,19 @@ void SocketSender::sendKinectKeepSkeletonResponse() {
 		sprintf_s(buffer, "runPID\n");
 		sendXMLToClient(buffer);
 		PIDRun::setExecutePID(false);
-		cout << "Congrats you come in!" << endl;
+		cout << "Successfully complete sending runPID command to EyeOnYouServer!" << endl;
 	}
+}
 
-	cout << "Fuck you didnt't come in" << endl;
+void SocketSender::sendKinectTagProfileResponse() {
+	char buffer[512];
+	buffer[0] = 0;
+
+	if (PIDRun::getTagProfile() == false) {
+		sprintf_s(buffer, "finishedTagging\n");
+		sendXMLToClient(buffer);
+		cout << "Successfully complete sending tagProfile result to EyeOnYouServer!" << endl;
+	}
 }
 
 void SocketSender::sendXMLToClient(char xml[]) {

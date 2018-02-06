@@ -8,14 +8,14 @@ import java.util.concurrent.Executors;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import eyeonyouserver.SocketClientKeepSkeleton;
+import eyeonyouserver.SocketClientWithSensing;
 import pairing.PID;
 
 public class MainServerSocket {
 	private int port;
 	private ServerSocket servsock;
 	
-	private static SocketClientKeepSkeleton clientRunPID = null;
+	public static SocketClientWithSensing clientRunPID = null;
     static String ipaddress = "localhost";
     
 	private Timer timerStartPairing = new Timer();
@@ -32,7 +32,7 @@ public class MainServerSocket {
 	}
 
 	public void run() {
-		clientRunPID = new SocketClientKeepSkeleton(ipaddress);
+		clientRunPID = new SocketClientWithSensing(ipaddress);
 		
 		timerStartPairing.scheduleAtFixedRate(new TimerTask() {
 			 @Override

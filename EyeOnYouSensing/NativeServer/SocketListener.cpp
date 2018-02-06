@@ -95,4 +95,11 @@ void SocketListener::HandleMessage(char* xml) {
 		if (sender != NULL)
 			sender->sendKinectKeepSkeletonResponse();
 	}
+
+	if (strstri(xml, "GetKinectTagProfile") != NULL) {
+		PIDRun::setTagProfile(true);
+		printf("Client sent GetKinectTagProfile request message\n");
+		//if (sender != NULL)
+		//	sender->sendKinectTagProfileResponse();
+	}
 }

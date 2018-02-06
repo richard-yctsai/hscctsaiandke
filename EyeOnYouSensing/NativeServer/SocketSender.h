@@ -19,6 +19,7 @@ public:
 	void sendMemoryResponse();
 	void sendRandomNumberResponse();
 	void sendKinectKeepSkeletonResponse();
+	void sendKinectTagProfileResponse();
 
 protected:
 	void sendXMLToClient(char* xml);

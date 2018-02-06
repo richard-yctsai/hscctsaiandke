@@ -43,7 +43,7 @@ string VotingPID::votingOfPID(int rec_id, string rec_name)
 
 	myPIDVector[rec_id].push_back(rec_name);
 
-	cout << "myPIDVector[myPIDID].size()" << myPIDVector[rec_id].size() << endl;
+	//cout << "myPIDVector[myPIDID].size()" << myPIDVector[rec_id].size() << endl;
 	return modeOfVector(myPIDVector[rec_id]);
 }
 
