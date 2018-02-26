@@ -162,7 +162,6 @@
   <ItemGroup>
     <ClCompile Include="CThread.cpp" />
     <ClCompile Include="MainActivity.cpp" />
-    <ClCompile Include="MainBackup.cpp" />
     <ClCompile Include="PIDRun.cpp" />
     <ClCompile Include="RobotDrive.cpp" />
     <ClCompile Include="ServerSocket.cpp" />

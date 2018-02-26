@@ -1,8 +1,8 @@
-package pairing;
+/*package pairing;
 
 import java.util.ArrayList;
 
-import data.Inertia;
+import data.Inertial;
 import data.Skeleton;
 import data.TurnList;
 import preprocess.ReadData;
@@ -19,7 +19,7 @@ public class TurnDetection {
 		String video_files = "circle2.csv";
 
 		ArrayList<Skeleton> jointspos = ReadData.readKinect_smooth(rootDir + "/KINECTData/Evaluation/abs/" + video_files);
-		ArrayList<Inertia> imu_6 = ReadData.readIMU(rootDir + "/IMUData/Evaluation/absacc/" + imu_acc_files);
+		ArrayList<Inertial> imu_6 = ReadData.readIMU(rootDir + "/IMUData/Evaluation/absacc/" + imu_acc_files);
 
 		System.out.println(imu_6.size() + " - " + jointspos.size());
 
@@ -61,3 +61,4 @@ public class TurnDetection {
 	}
 
 }
+*/

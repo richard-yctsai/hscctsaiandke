@@ -3,7 +3,7 @@ package preprocess;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-import data.Inertia;
+import data.Inertial;
 import data.Skeleton;
 import data.TurnList;
 import data.MTurn;
@@ -15,16 +15,23 @@ import data.STurn;
 * @author  WeiChun
 */
 public class  TurnMag {
+	final static double gap = 0.1;
+	final static double thresholdDisp = 1;
+	final static double thresholdAvgm = 0.2;
 	
 	/**
 	* generate a list of "Move" and "Stop" turns of skeleton data
 	*   
 	* @param: a list of Skeleton objects
+	* @param: sampling rate for Kinect tracking skeleton per second (fps).
 	* 
 	* @return: a TurnList object
 	*/
-	public static TurnList genKINECTTurnList(ArrayList<Skeleton> jointspos) {
-		double dis[][] = SkeletonInfo.getDistanceList(jointspos);
+	
+	public static TurnList genKINECTTurnList(ArrayList<Skeleton> jointspos, int sampleingRateOfSkn) {
+		final int frameSizePerSeg = (int)(sampleingRateOfSkn* (1.0 / 5)); // 20frames * 0.2secs = 4frames/segment
+		
+		double dis[][] = SkeletonInfo.getDistanceList(jointspos, sampleingRateOfSkn, frameSizePerSeg);
 		double[] sum_dis = new double[3];
 		double mag_dis;
 		
@@ -34,18 +41,20 @@ public class  TurnMag {
 		ArrayList<STurn> still_turns = new ArrayList<STurn>();
 		
 		// move detection and generate move turns
-		for (int i = 0; i < dis[0].length; i+=5) {
+		for (int i = 0; i < dis[0].length; i+=frameSizePerSeg) {
 			for (int axis = 0; axis < 3; axis++) {
 				double sum = 0;
-				for (int j = 0; j < 5; j++) {
+				for (int j = 0; j < frameSizePerSeg; j++) {
 					sum += dis[axis][i+j];
 				}
 				sum_dis[axis] = Math.abs(sum) * 100;
 			}
 			mag_dis = Math.pow(Math.pow(sum_dis[0], 2) + Math.pow(sum_dis[1], 2) + Math.pow(sum_dis[2], 2), 0.5);
-				
-			if (mag_dis >= 5) {
+//			System.out.println("mag_dis: " + mag_dis);
+			//--------------name parameter!!!!!!!!!!!!
+			if (mag_dis >= thresholdDisp) { 
 				move_seg.add(idx);
+			//-----------------------------------------
 			} else {
 				if (move_seg.size() > 1) {
 					double st = new BigDecimal(move_seg.get(0) * 0.2).setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
@@ -65,31 +74,33 @@ public class  TurnMag {
 			MTurn moveturn = new MTurn(st, et);
 			move_turns.add(moveturn);
 		}
+		//----------------name parameter gap!--------------------------------
+		move_turns = mergeMoveTurn(move_turns, gap);
 		
-		move_turns = mergeMoveTurn(move_turns, 0.2);
-		
-		double end = new BigDecimal(jointspos.size() / 30).setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
+		double end = new BigDecimal(jointspos.size() / sampleingRateOfSkn).setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
 		if (move_turns == null) {
 			STurn stillturn = new STurn(0, end);
 			still_turns.add(stillturn);
 		} else {
-			// generate still turns
+			// generate still turns for the very beginning.
 			if (move_turns.get(0).getStartTime() != 0) {
 				STurn stillturn = new STurn(0, move_turns.get(0).getStartTime());
 				still_turns.add(stillturn);
 			}
+			// generate still turns for the middle.
 			for (int i = 0; i < move_turns.size() - 1; i++) {
 				STurn stillturn = new STurn(move_turns.get(i).getEndTime(),
 						move_turns.get(i + 1).getStartTime());
 				still_turns.add(stillturn);
 			}
+			// generate still turns for the very end.
 			if (move_turns.get(move_turns.size() - 1).getEndTime() != end) {
 				STurn stillturn = new STurn(move_turns.get(move_turns.size() - 1).getEndTime(), end);
 				still_turns.add(stillturn);
 			}
 			
 			// add acceleration values to move turns
-			addAcceleration_kinect(move_turns, jointspos);
+			addAcceleration_kinect(move_turns, jointspos, sampleingRateOfSkn, frameSizePerSeg);
 		}
 		
 		return new TurnList(still_turns, move_turns);
@@ -100,10 +111,11 @@ public class  TurnMag {
 	* generate a list of "Move" and "Stop" turns of inertial data
 	*   
 	* @param: a list of Inertia objects
-	* 
+	* @param: sampling rate for IMU tracking inertial per second (100 as default).
 	* @return: a TurnList object
 	*/
-	public static TurnList genIMUTurnList(ArrayList<Inertia> imu_3) {
+	public static TurnList genIMUTurnList(ArrayList<Inertial> imu_3, int sampleingRateOfItl) {
+		final int dataSizePerSeg = (int)(sampleingRateOfItl* (1.0 / 10)); // 100data * 0.1secs = 10data/segment
 		int idx = 0;
 		ArrayList<STurn> still_turns = new ArrayList<STurn>();
 		ArrayList<Integer> move_seg = new ArrayList<Integer>();
@@ -121,11 +133,12 @@ public class  TurnMag {
 				sum_accmags += Math.pow(Math.pow(imu_3.get(i+j).getAcc()[0], 2) + Math.pow(imu_3.get(i+j).getAcc()[1], 2) + Math.pow(imu_3.get(i+j).getAcc()[2], 2), 0.5);   
 			}
 			mean_accmags = sum_accmags / 10;
-			
-			if (mean_accmags >= 1.5) {
+//			System.out.println("mean_accmags: " + mean_accmags);
+			if (mean_accmags >= thresholdAvgm) {
 				move_seg.add(idx);
 			} else {
-				if (move_seg.size() > 2) {
+				if (move_seg.size() > 1) {
+					//0
 					double st = new BigDecimal(move_seg.get(0) * 0.1).setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
 					double et = new BigDecimal(move_seg.get(move_seg.size()-1) * 0.1 + 0.1).setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
 					MTurn moveturn = new MTurn(st, et);
@@ -137,17 +150,18 @@ public class  TurnMag {
 			idx++;
 		}
 		
-		if (move_seg.size() > 2) {
+		// Generate final move turn in case there is no sufficient 10 data sizes.
+		if (move_seg.size() > 1) {
 			double st = new BigDecimal(move_seg.get(0) * 0.1).setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
 			double et = new BigDecimal(move_seg.get(move_seg.size()-1) * 0.1 + 0.1).setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
 			MTurn moveturn = new MTurn(st, et);
 			move_turns.add(moveturn);
 		}
-		
-		move_turns = mergeMoveTurn(move_turns, 0.2);
+		//--------------------name parameter gap!--------------------------------
+		move_turns = mergeMoveTurn(move_turns, gap);
 		
 		// generate still turns
-		double end = new BigDecimal(imu_3.size() / 100).setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
+		double end = new BigDecimal(imu_3.size() / sampleingRateOfItl).setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
 		if (move_turns == null) {
 			STurn stillturn = new STurn(0, end);
 			still_turns.add(stillturn);
@@ -158,7 +172,7 @@ public class  TurnMag {
 			}
 			for (int i = 0; i < move_turns.size() - 1; i++) {
 				STurn stillturn = new STurn(move_turns.get(i).getEndTime(),
-						move_turns.get(i + 1).getStartTime());
+				move_turns.get(i + 1).getStartTime());
 				still_turns.add(stillturn);
 			}
 
@@ -166,8 +180,7 @@ public class  TurnMag {
 				STurn stillturn = new STurn(move_turns.get(move_turns.size() - 1).getEndTime(), end);
 				still_turns.add(stillturn);
 			}
-
-			addAcceleration_imu(move_turns, imu_3);
+			addAcceleration_imu(move_turns, imu_3, sampleingRateOfItl, dataSizePerSeg);
 		}
 		
 		return new TurnList(still_turns, move_turns);
@@ -219,17 +232,19 @@ public class  TurnMag {
 	*   
 	* @param: a list of MTurn objects
 	* @param: a list of Skeleton objects
+	* @param: sampling rate for Kinect tracking skeleton per second (fps).
+	* @param: frame data number per segment(0.2sec) , 20*0.2 = 4 as default
 	*/
-	private static void addAcceleration_kinect(ArrayList<MTurn> Turns, ArrayList<Skeleton> jointspos) {
-		ArrayList<Skeleton> kmove;
+	private static void addAcceleration_kinect(ArrayList<MTurn> Turns, ArrayList<Skeleton> jointspos, int sampleingRateOfSkn, int frameSizePerSeg) {
+		ArrayList<Skeleton> certainMove;
 		double[][] acc;
 		
 		for (int i = 0; i < Turns.size(); i++) {
 			int head = new BigDecimal(Turns.get(i).getStartTime() / 0.2).setScale(1, BigDecimal.ROUND_HALF_DOWN).intValue();
 			int tail = new BigDecimal(Turns.get(i).getEndTime() / 0.2).setScale(1, BigDecimal.ROUND_HALF_DOWN).intValue();
 			
-			kmove = new ArrayList<Skeleton>(jointspos.subList(head * 6, tail * 6));
-			acc = SkeletonInfo.getAccList(kmove);
+			certainMove = new ArrayList<Skeleton>(jointspos.subList(head * frameSizePerSeg, tail * frameSizePerSeg));
+			acc = SkeletonInfo.getAccList(certainMove, sampleingRateOfSkn, frameSizePerSeg);
 			for (int j = 0; j < acc[0].length; j++) {
 				Turns.get(i).addAcc(Math.pow(Math.pow(acc[0][j], 2) + Math.pow(acc[1][j], 2) + Math.pow(acc[2][j], 2), 0.5));
 				Turns.get(i).addAcc_x(acc[0][j]);
@@ -246,14 +261,13 @@ public class  TurnMag {
 	* @param: a list of MTurn objects
 	* @param: a list of inertia objects
 	*/
-	private static void addAcceleration_imu(ArrayList<MTurn> Turns, ArrayList<Inertia> imu_6) {
-		ArrayList<Inertia> imu_move;
-		
+	private static void addAcceleration_imu(ArrayList<MTurn> Turns, ArrayList<Inertial> imu_6, int sampleingRateOfItl, int dataSizePerSeg) {
+		ArrayList<Inertial> imu_move;
 		for (int i = 0; i < Turns.size(); i++) {
 			int head = new BigDecimal(Turns.get(i).getStartTime() / 0.1).setScale(1, BigDecimal.ROUND_HALF_DOWN).intValue();
 			int tail = new BigDecimal(Turns.get(i).getEndTime() / 0.1).setScale(1, BigDecimal.ROUND_HALF_DOWN).intValue();
 			
-			imu_move = new ArrayList<Inertia>(imu_6.subList(head * 10, tail * 10));
+			imu_move = new ArrayList<Inertial>(imu_6.subList(head * dataSizePerSeg, tail * dataSizePerSeg));
 			calAcceleration(Turns.get(i), imu_move);
 		}
 		
@@ -265,11 +279,11 @@ public class  TurnMag {
 	* @param: a MTurn object
 	* @param: a list of inertia objects
 	*/
-	private static void calAcceleration(MTurn MoveTurn, ArrayList<Inertia> imu_move) {
+	private static void calAcceleration(MTurn MoveTurn, ArrayList<Inertial> imu_move) {
 		double tmpAcc = 0, tmpAccX = 0, tmpAccY = 0, tmpAccZ = 0;
 		int cnt = 0;
 		
-		for (Inertia imu:imu_move) {
+		for (Inertial imu:imu_move) {
 			tmpAcc += Math.pow(Math.pow(imu.getAcc()[0], 2) + Math.pow(imu.getAcc()[1], 2) + Math.pow(imu.getAcc()[2], 2), 0.5);
 			tmpAccX += imu.getAcc()[0];
 			tmpAccY += imu.getAcc()[1];

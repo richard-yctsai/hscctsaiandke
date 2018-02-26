@@ -10,7 +10,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
 import data.HeadPos;
-import data.Inertia;
+import data.Inertial;
 import data.Skeleton;
 import data.TurnList;
 import preprocess.BodyExtraction;
@@ -26,127 +26,115 @@ public class PID {
 	/***
 	 * @author PID class is transformed from WeiChun's EyeOnYou Demo code.
 	 */
+	
+	public static int collectSeconds = 5;
+	public static int sampleingRateOfSkn = 16;
+	public static int sampleingRateOfItl = 100;
+	
 	public static void startPairing() {
-		int framesOfSkeletonSegment = 3*16*8/10; // 13 samples in 1 seconds
-		int framesOfInnertialSegment = 3*100*8/10; // 100 samples in 1 seconds
-		String rootDir = "C:/Users/Public/Data";
-		ArrayList<String> users = new ArrayList<String>();
-		ArrayList<Integer> usersID = new ArrayList<Integer>();
 		
+		int framesOfSkeletonSegment = collectSeconds*sampleingRateOfSkn*8/10; // 13 samples in 1 seconds
+		int framesOfInnertialSegment = collectSeconds*sampleingRateOfItl*8/10; // 100 samples in 1 seconds
+		String rootDir = "C:/Users/Public/Data";
+		ArrayList<String> I_usersName = new ArrayList<String>();
+		ArrayList<Integer> S_skeletonsID = new ArrayList<Integer>();
+		
+		// Read VSFile.cvs to separate different users in VSFile
+		S_skeletonsID = BodyExtraction.bodyCount(rootDir + "/KINECTData/VSFile.csv");
+		for (int i = 0; i < S_skeletonsID.size(); i++) {
+			BodyExtraction.bodyWriter(rootDir + "/KINECTData/VSFile.csv", 
+					rootDir + "/KINECTData/VSFile_" + i + ".csv", S_skeletonsID.get(i));
+		}
+		
+		// Read all inertial.txt from each UEs and accumulate file's name into I_userName
 		File[] myFileName = Filter.finder(rootDir + "/IMUData/");
 		for(int i=0; i < myFileName.length; i++) {
 			String tempWithExtension = myFileName[i].getName();
 			String temp = tempWithExtension.substring(0, tempWithExtension.lastIndexOf('.'));
+			
+			// Ignore buffer file to prevent it from seeing as the duplicate I_usersName.
 			if(!temp.contains("_buffer")) {
-				users.add(temp);
-				System.out.println(temp);
+				I_usersName.add(temp);
 			}
 		}
 		
-		// separate different users in VSFile
-		ArrayList<Integer> skeletonIDs;
-		skeletonIDs = BodyExtraction.bodyCount(rootDir + "/KINECTData/VSFile.csv");
-		
-		for (int i = 0; i < skeletonIDs.size(); i++) {
-			BodyExtraction.bodyWriter(rootDir + "/KINECTData/VSFile.csv", 
-					rootDir + "/KINECTData/VSFile_" + i + ".csv", skeletonIDs.get(i));
+		// Transform inertial data file from .txt to .csv
+		for (int i = 0; i < I_usersName.size(); i++) {
+			ProcessTool.reformat(rootDir + "/IMUData/" + I_usersName.get(i) + ".txt", rootDir + "/IMUData/" + I_usersName.get(i) + ".csv");
 		}
 		
-		// transform inertial data file from .txt to .csv
-		for (int i = 0; i < users.size(); i++) {
-			ProcessTool.reformat(rootDir + "/IMUData/" + users.get(i) + ".txt", rootDir + "/IMUData/" + users.get(i) + ".csv");
+		// Read skeleton data and inertial data of each person
+		ArrayList<ArrayList<Skeleton>> skeletons_set = new ArrayList<ArrayList<Skeleton>>();
+		ArrayList<ArrayList<Inertial>> inertials_set = new ArrayList<ArrayList<Inertial>>();
+		for (int i = 0; i < S_skeletonsID.size(); i++) {
+			ArrayList<Skeleton> jointsKinect = ReadData.readKinect_smooth(rootDir + "/KINECTData/VSFile_" + i + ".csv");
+			skeletons_set.add(jointsKinect);
+		}
+		for (int i = 0; i < I_usersName.size(); i++) {
+			ArrayList<Inertial> jointsIMU = ReadData.readIMU(rootDir + "/IMUData/" + I_usersName.get(i) + ".csv");
+			inertials_set.add(jointsIMU);
 		}
 		
-		// read skeleton data and inertial data of each person
-		ArrayList<ArrayList<Skeleton>> skeletons = new ArrayList<ArrayList<Skeleton>>();
-		ArrayList<ArrayList<Inertia>> inertia_set = new ArrayList<ArrayList<Inertia>>();
-		ArrayList<ArrayList<HeadPos>> bodyHead = new ArrayList<ArrayList<HeadPos>>();
-		
-		for (int i = 0; i < skeletonIDs.size(); i++) {
-			ArrayList<Skeleton> jointspos = ReadData.readKinect_smooth(rootDir + "/KINECTData/VSFile_" + i + ".csv");
-			ArrayList<HeadPos> HeadXY = ReadData.readHead(rootDir + "/KINECTData/VSFile_" + i + ".csv");
-			skeletons.add(jointspos);
-			bodyHead.add(HeadXY);
-			usersID.add(ReadData.readID(rootDir + "/KINECTData/VSFile_" + i + ".csv"));
+		//Pair skeleton data with users' IDs every 5 seconds
+		ArrayList<Double> scores = new ArrayList<Double>();
+		System.out.println("*************************");
+		for (int i = 0; i < skeletons_set.size(); i++) {
+			for (int j = 0; j < inertials_set.size(); j++) {
+				ArrayList<Skeleton> sub_skeletons = new ArrayList<Skeleton>(skeletons_set.get(i).subList(0, framesOfSkeletonSegment));
+				ArrayList<Inertial> sub_inertials = new ArrayList<Inertial>(inertials_set.get(j).subList(0, framesOfInnertialSegment));
+				
+				TurnList kinectTurns = TurnMag.genKINECTTurnList(sub_skeletons, sampleingRateOfSkn);
+				TurnList imuTurns = TurnMag.genIMUTurnList(sub_inertials, sampleingRateOfItl);
+				
+				double score = 0;
+				score = FusionAlgo.calResult_alg3(kinectTurns, imuTurns);
+				scores.add(score);
+				System.out.println("Scores: (i=" + i + ", j=" + j + ") -> " + score);
+			}
 		}
+		System.out.println("*************************");
 		
-		for (int i = 0; i < users.size(); i++) {
-			// synchronize starter
-//			int offset = ProcessTool.getStarter(rootDir + "/KINECTData/VSFile.csv", rootDir + "/IMUData/" + users.get(i) + ".csv");
-			ArrayList<Inertia> inertia = ReadData.readIMU(rootDir + "/IMUData/" + users.get(i) + ".csv");
-			inertia_set.add(inertia);
-			
-//			if ((offset+1) == inertia.size()) {
-//				File idleTxtFile = new File(rootDir + "/IMUData/", users.get(i) + ".txt");
-//				File idleCsvFile = new File(rootDir + "/IMUData/", users.get(i) + ".csv");
-//				idleTxtFile.delete();
-//				idleCsvFile.delete();
-//				users.remove(i);
-////				usersID.remove(i);
-//			}
+		/***
+		 * Get the best matching pairing result from each skeleton to each inertial based on scores.
+		 * Assign 1 when the high score with strongest confidence happened.
+		 * Assign 0; otherwise.
+		 */
+		int[][] resultMatrix = IDPairing.pairing(scores, S_skeletonsID.size(), I_usersName.size());
+		
+		// Write pairing results of each frame every 1 seconds
+		int[] match = new int[S_skeletonsID.size()];
+		for (int i = 0; i < S_skeletonsID.size(); i++) {
+			match[i] = -1;
 		}
-		
-		//pair skeleton data with users' IDs every 5 seconds
-//		for (int t = 0; t < skeletons.get(0).size()/framesOfSkeletonSegment; t++) {
-		for (int t = 0; t < 1; t++) {
-			ArrayList<Double> scores = new ArrayList<Double>();
-			for (int i = 0; i < skeletons.size(); i++) {
-				for (int j = 0; j < inertia_set.size(); j++) {
-					ArrayList<Skeleton> sub_jointspos = new ArrayList<Skeleton>(skeletons.get(i).subList(t * framesOfSkeletonSegment, (t + 1) * framesOfSkeletonSegment));	// 13 samples in 1 seconds
-					ArrayList<Inertia> sub_inertia = new ArrayList<Inertia>(inertia_set.get(j).subList(t * framesOfInnertialSegment, (t + 1) * framesOfInnertialSegment));	// 100 samples in 1 seconds
-					
-					TurnList kinectTurns = TurnMag.genKINECTTurnList(sub_jointspos);
-					TurnList imuTurns = TurnMag.genIMUTurnList(sub_inertia);
-					scores.add(FusionAlgo.calResult_alg3(kinectTurns, imuTurns));
-					System.out.println("Pairing scores!!!!!!!!!!!!!!!!: " + FusionAlgo.calResult_alg3(kinectTurns, imuTurns));
+		for (int i = 0; i < skeletons_set.size(); i++) {
+			for (int j = 0; j < inertials_set.size(); j++) {
+				if (resultMatrix[i][j] == 1) {
+					match[i] = j;
 				}
 			}
-			
-			int[][] result = IDPairing.pairing(scores, skeletonIDs.size(), users.size());
-			
-			// write pairing results of each frame every 1 seconds
-			int[] match = new int[skeletonIDs.size()];
-			for (int i = 0; i < skeletonIDs.size(); i++) {
-				match[i] = -1;
-			}
-			for (int i = 0; i < skeletons.size(); i++) {
-				for (int j = 0; j < inertia_set.size(); j++) {
-//					System.out.printf("i=" + i + " j=" + j);
-//					System.out.printf(" result[i][j]=%d || ", result[i][j]);
-					if (result[i][j] == 1) {
-						match[i] = j;
-					}
-				}
-//				System.out.println("");
-			}
-			
-			try {
-				String[] IDCoordinate = new String[skeletonIDs.size() * 2];
-//				CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv", true), ',', CSVWriter.NO_QUOTE_CHARACTER);
-				CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);
+		}
+		
+		try {
+			String[] IDCoordinate = new String[S_skeletonsID.size() * 2];
+			CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);  // CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv", true), ',', CSVWriter.NO_QUOTE_CHARACTER);
 //				for (int k = t * framesOfSkeletonSegment; k < (t+1) * framesOfSkeletonSegment; k++) {
-					for (int i = 0; i < skeletonIDs.size(); i++) {
-						if (match[i] >= 0) {
-							IDCoordinate[i*2] = String.valueOf(usersID.get(i));
-							IDCoordinate[i*2 + 1] = users.get(match[i]);
-						} else {
-							IDCoordinate[i*2] = String.valueOf(usersID.get(i));
-							IDCoordinate[i*2 + 1] = "Unknown";
-						}
-//						IDCoordinate[i*4 + 2] = String.valueOf(bodyHead.get(i).get(k).getX());
-//						IDCoordinate[i*4 + 3] = String.valueOf(bodyHead.get(i).get(k).getY());
+				for (int i = 0; i < S_skeletonsID.size(); i++) {
+					if (match[i] >= 0) {
+						IDCoordinate[i*2] = String.valueOf(S_skeletonsID.get(i));
+						IDCoordinate[i*2 + 1] = I_usersName.get(match[i]);
+					} else {
+						IDCoordinate[i*2] = String.valueOf(S_skeletonsID.get(i));
+						IDCoordinate[i*2 + 1] = "Unknown";
 					}
-					cw.writeNext(IDCoordinate);
+				}
+				cw.writeNext(IDCoordinate);
 //				}
-				cw.close();
-				// Complete yielding the pairing result.csv and request Kinect to perform tagging profile name.
-				MainServerSocket.clientRunPID.requestKinectTagProfile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
+			cw.close();
+			// Complete yielding the pairing result.csv and request Kinect to perform tagging profile name.
+			MainServerSocket.clientRunPID.requestKinectTagProfile();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
 	}
-	
 }

@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import data.Inertia;
+import data.Inertial;
 import data.SIPair;
 import data.Skeleton;
 import data.TurnList;
@@ -215,93 +215,93 @@ public class IDPairing {
 		return SD; 
 	}
 
-	public static void main(String[] args) {
-		
-		// get list of files
-		File folder = new File(rootDir_k);
-		ArrayList<String> kFileNames = listFilesForFolder(folder);
-		/*for(String file : kFileNames) {
-			System.out.println(file);
-		}*/
-		
-		folder = new File(rootDir_i);
-		ArrayList<String> iFileNames = listFilesForFolder(folder);
-		/*for(String file : iFileNames) {
-			System.out.println(file);
-		}*/
-		
-		int round = 1000;
-		int err1 = 0, err2 = 0, err3 = 0, err11 = 0, err22 = 0, err33 = 0;
-		int nS = 8;
-		int nI = 8;
-		for (int r = 0; r < round; r++) {
-			ArrayList<Integer> pickedNums = randomPick(nS);
-			ArrayList<Double> scores1 = new ArrayList<Double>();
-			ArrayList<Double> scores2 = new ArrayList<Double>();
-			ArrayList<Double> scores3 = new ArrayList<Double>();
-		
-			/*for (int i:pickedNums) {
-				System.out.println(i);
-			}*/
-		
-			for (int i = 0; i < nS; i++) {
-				for(int j = 0; j < nI; j++) {
-					//System.out.println(i + " vs. " + j);
-					ArrayList<Skeleton> jointspos = ReadData.readKinect_smooth(rootDir_k + kFileNames.get(pickedNums.get(i)));
-					ArrayList<Inertia> imupoints = ReadData.readIMU(rootDir_i + iFileNames.get(pickedNums.get(j)));
-				
-					TurnList kinectTurns = TurnMag.genKINECTTurnList(jointspos);
-					TurnList imuTurns = TurnMag.genIMUTurnList(imupoints);
-					scores1.add(FusionAlgo.calResult_alg1(kinectTurns, imuTurns));
-					scores2.add(FusionAlgo.calResult_alg2(kinectTurns, imuTurns));
-					scores3.add(FusionAlgo.calResult_alg3(kinectTurns, imuTurns));
-				}
-			}
-		
-			int[][] result1 = pairing(scores1, nS, nI);
-			int[][] result11 = pairing_ul(scores1, nS, nI);
-			int[][] result2 = pairing(scores2, nS, nI);
-			int[][] result22 = pairing_ul(scores2, nS, nI);
-			int[][] result3 = pairing(scores3, nS, nI);
-			int[][] result33 = pairing_ul(scores3, nS, nI);
-			for (int i = 0; i < nS; i++) {
-				for (int j = 0; j < nI; j++) {
-					//System.out.printf("%d ", result3[i][j]);
-					if (i == j && result1[i][j] != 1) {
-						err1 += 1;
-					}
-					
-					if (i == j && result2[i][j] != 1) {
-						err2 += 1;
-					}
-					
-					if (i == j && result3[i][j] != 1) {
-						err3 += 1;
-					}
-					
-					if (i == j && result11[i][j] != 1) {
-						err11 += 1;
-					}
-					
-					if (i == j && result22[i][j] != 1) {
-						err22 += 1;
-					}
-					
-					if (i == j && result33[i][j] != 1) {
-						err33 += 1;
-					}
-				}
-				//System.out.println();
-			}
-		}
-		double errorRate1 = err1/(double)(nS*round);
-		double errorRate2 = err2/(double)(nS*round);
-		double errorRate3 = err3/(double)(nS*round);
-		double errorRate11 = err11/(double)(nS*round);
-		double errorRate22 = err22/(double)(nS*round);
-		double errorRate33 = err33/(double)(nS*round);
-		System.err.println("Error Rate: " + errorRate1 + " " + errorRate2 + " " + errorRate3 + " " + errorRate11 + " " + errorRate22 + " " + errorRate33);
-	
-	}
+//	public static void main(String[] args) {
+//		
+//		// get list of files
+//		File folder = new File(rootDir_k);
+//		ArrayList<String> kFileNames = listFilesForFolder(folder);
+//		/*for(String file : kFileNames) {
+//			System.out.println(file);
+//		}*/
+//		
+//		folder = new File(rootDir_i);
+//		ArrayList<String> iFileNames = listFilesForFolder(folder);
+//		/*for(String file : iFileNames) {
+//			System.out.println(file);
+//		}*/
+//		
+//		int round = 1000;
+//		int err1 = 0, err2 = 0, err3 = 0, err11 = 0, err22 = 0, err33 = 0;
+//		int nS = 8;
+//		int nI = 8;
+//		for (int r = 0; r < round; r++) {
+//			ArrayList<Integer> pickedNums = randomPick(nS);
+//			ArrayList<Double> scores1 = new ArrayList<Double>();
+//			ArrayList<Double> scores2 = new ArrayList<Double>();
+//			ArrayList<Double> scores3 = new ArrayList<Double>();
+//		
+//			/*for (int i:pickedNums) {
+//				System.out.println(i);
+//			}*/
+//		
+//			for (int i = 0; i < nS; i++) {
+//				for(int j = 0; j < nI; j++) {
+//					//System.out.println(i + " vs. " + j);
+//					ArrayList<Skeleton> jointspos = ReadData.readKinect_smooth(rootDir_k + kFileNames.get(pickedNums.get(i)));
+//					ArrayList<Inertial> imupoints = ReadData.readIMU(rootDir_i + iFileNames.get(pickedNums.get(j)));
+//				
+//					TurnList kinectTurns = TurnMag.genKINECTTurnList(jointspos);
+//					TurnList imuTurns = TurnMag.genIMUTurnList(imupoints);
+//					scores1.add(FusionAlgo.calResult_alg1(kinectTurns, imuTurns));
+//					scores2.add(FusionAlgo.calResult_alg2(kinectTurns, imuTurns));
+//					scores3.add(FusionAlgo.calResult_alg3(kinectTurns, imuTurns));
+//				}
+//			}
+//		
+//			int[][] result1 = pairing(scores1, nS, nI);
+//			int[][] result11 = pairing_ul(scores1, nS, nI);
+//			int[][] result2 = pairing(scores2, nS, nI);
+//			int[][] result22 = pairing_ul(scores2, nS, nI);
+//			int[][] result3 = pairing(scores3, nS, nI);
+//			int[][] result33 = pairing_ul(scores3, nS, nI);
+//			for (int i = 0; i < nS; i++) {
+//				for (int j = 0; j < nI; j++) {
+//					//System.out.printf("%d ", result3[i][j]);
+//					if (i == j && result1[i][j] != 1) {
+//						err1 += 1;
+//					}
+//					
+//					if (i == j && result2[i][j] != 1) {
+//						err2 += 1;
+//					}
+//					
+//					if (i == j && result3[i][j] != 1) {
+//						err3 += 1;
+//					}
+//					
+//					if (i == j && result11[i][j] != 1) {
+//						err11 += 1;
+//					}
+//					
+//					if (i == j && result22[i][j] != 1) {
+//						err22 += 1;
+//					}
+//					
+//					if (i == j && result33[i][j] != 1) {
+//						err33 += 1;
+//					}
+//				}
+//				//System.out.println();
+//			}
+//		}
+//		double errorRate1 = err1/(double)(nS*round);
+//		double errorRate2 = err2/(double)(nS*round);
+//		double errorRate3 = err3/(double)(nS*round);
+//		double errorRate11 = err11/(double)(nS*round);
+//		double errorRate22 = err22/(double)(nS*round);
+//		double errorRate33 = err33/(double)(nS*round);
+//		System.err.println("Error Rate: " + errorRate1 + " " + errorRate2 + " " + errorRate3 + " " + errorRate11 + " " + errorRate22 + " " + errorRate33);
+//	
+//	}
 
 }

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import com.opencsv.CSVReader;
 
 import data.HeadPos;
-import data.Inertia;
+import data.Inertial;
 import data.Skeleton;
 
 /**
@@ -99,16 +99,16 @@ public class ReadData {
 	* 
 	* @return: list of Inertia objects 
 	*/
-	public static ArrayList<Inertia> readIMU(String file) {
+	public static ArrayList<Inertial> readIMU(String file) {
 		
-		ArrayList<Inertia> imu_6 = new ArrayList<Inertia>();
+		ArrayList<Inertial> imu_6 = new ArrayList<Inertial>();
 		
 		CSVReader cr = null;
 		try {
 			cr = new CSVReader(new FileReader(file));
 			String[] line;
 			while ((line = cr.readNext()) != null) {
-				Inertia sixaxis = new Inertia(Double.valueOf(line[0]), Double.valueOf(line[1]), Double.valueOf(line[2]));
+				Inertial sixaxis = new Inertial(Double.valueOf(line[0]), Double.valueOf(line[1]), Double.valueOf(line[2]));
 				imu_6.add(sixaxis);
 			}
 			cr.close();

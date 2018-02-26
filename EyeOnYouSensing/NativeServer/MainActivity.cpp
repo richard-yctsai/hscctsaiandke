@@ -265,8 +265,6 @@ int _tmain(int argc, _TCHAR* argv[])
 				putText(mImg, time_str, cv::Point(0, 60), 0, 1, cv::Scalar(0, 0, 255), 3);
 				putText(mImg, to_string(step), cv::Point(0, 90), 0, 1, cv::Scalar(255, 0, 0), 3);
 
-
-
 				// For each body
 				for (int i = 0; i < iBodyCount; ++i)
 				{
@@ -337,21 +335,13 @@ int _tmain(int argc, _TCHAR* argv[])
 					RobotDrive::setDriveunit(0);
 				}
 
-				//if (step%120 == 0)
-				//{
-				////cout << "people counts change: right now ->" << realibodycount << " last time -> " << lastibodycount << endl;
-				//csvfile.close();
-				//PIDRun::systemCallCmd(cmdLinePID);
-				//csvfile.open(csvfilename);
-				//}
-
 				//if (step != 0 && (step % 30 == 0) && PIDRun::getExecutePID() == true)
 				// 1. csvfile.close();
 				if (PIDRun::getKeepSkeleton() == true)
 				{
 					lastiBodyCount = realiBodyCount;
 					/*cout << "People counts: " << realiBodyCount << endl;*/
-				
+
 					//save buffer file
 					csvfile.close();
 					// Create new file and from vsfile_Buffer.csv
@@ -361,10 +351,10 @@ int _tmain(int argc, _TCHAR* argv[])
 					string line;
 					while (getline(fin, line)) fout << line << '\n';
 					cout << "buffer complete!!!!!!!!!!!!!" << endl;
-				
+
 					PIDRun::setKeepSkeleton(false);
 					PIDRun::setExecutePID(true);
-					csvfile.open(csvfilename);			
+					csvfile.open(csvfilename);
 				}
 
 				// Read result.csv to tag profile on top of the head
@@ -380,7 +370,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					double x, y;
 					int idx = 0;
 					while (getline(templine, data, ',')) {
-						
+
 						if (idx % 2 == 0) {
 							VotingPID::setID(data.c_str());
 						}

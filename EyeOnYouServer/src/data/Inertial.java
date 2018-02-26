@@ -5,20 +5,20 @@ package data;
 *
 * @author  WeiChun
 */
-public class Inertia {
+public class Inertial {
 	
-	private double[] acc;
+	private double[] acc; //Input 3-axis values into double array
 	private double[] gyro;
 	
-	public Inertia() {
+	public Inertial() {
 		
 	}
 	
-	public Inertia(double acc_x, double acc_y, double acc_z) {
+	public Inertial(double acc_x, double acc_y, double acc_z) {
 		this.setAcc(new double[] {acc_x, acc_y, acc_z});
 	}
 	
-	public Inertia(double acc_x, double acc_y, double acc_z, double gyro_x, double gyro_y, double gyro_z) {
+	public Inertial(double acc_x, double acc_y, double acc_z, double gyro_x, double gyro_y, double gyro_z) {
 		this.setAcc(new double[] {acc_x, acc_y, acc_z});
 		this.setGyro(new double[] {gyro_x, gyro_y, gyro_z});
 	}
