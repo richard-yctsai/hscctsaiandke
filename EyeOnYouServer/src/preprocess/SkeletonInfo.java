@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import data.Skeleton;
+import data.SkeletonAcc;
 
 /**
 * This class is used to process skeleton data into some spatial information.
@@ -22,25 +23,17 @@ public class SkeletonInfo {
 	* 
 	* @return: arrays of displacements in each axis
 	*/
-	public static double[][] getDistanceList(ArrayList<Skeleton> jointspos, int sampleingRateOfSkn, int frameSizePerSeg) {
+	public static double[][] getDisplacement(ArrayList<Skeleton> someoneJointsPos) {
 		//(t) Position frames per segment are calculated into (t-1) Distance data per segment ( t=4 as default)
-		double [][] distance = new double[3][jointspos.size()/frameSizePerSeg * (frameSizePerSeg-1)];
-		int len = 0;
+		double [][] displacement = new double[3][someoneJointsPos.size()-1];
 		
-		for (int i = 0; i < jointspos.size(); i+=frameSizePerSeg) {
-			if (i+frameSizePerSeg > jointspos.size()) {
-				break;
-			}
-			List<Skeleton>subjointspos = jointspos.subList(i, i+frameSizePerSeg);
-			for (int j = 0; j < (frameSizePerSeg-1); j++) {
-				distance[0][len] = subjointspos.get(j+1).getRight_wrist()[0] - subjointspos.get(j).getRight_wrist()[0];
-				distance[1][len] = subjointspos.get(j+1).getRight_wrist()[1] - subjointspos.get(j).getRight_wrist()[1];
-				distance[2][len] = subjointspos.get(j+1).getRight_wrist()[2] - subjointspos.get(j).getRight_wrist()[2];
-				len++;
-			}
+		for (int i=0; i < someoneJointsPos.size()-1; i++) {
+				displacement[0][i] = someoneJointsPos.get(i+1).getRight_wrist()[0] - someoneJointsPos.get(i).getRight_wrist()[0];
+				displacement[1][i] = someoneJointsPos.get(i+1).getRight_wrist()[1] - someoneJointsPos.get(i).getRight_wrist()[1];
+				displacement[2][i] = someoneJointsPos.get(i+1).getRight_wrist()[2] - someoneJointsPos.get(i).getRight_wrist()[2];
 		}
 		
-		return distance;
+		return displacement;
 	}
 	
 	/**
@@ -52,18 +45,18 @@ public class SkeletonInfo {
 	* 
 	* @return: arrays of velocity in each axis
 	*/
-	public static double[][] getSpeedList(ArrayList<Skeleton> jointspos, int sampleingRateOfSkn, int frameSizePerSeg) {
+	public static double[][] getVelocity(ArrayList<Skeleton> someoneJointsPos, double sampleingRateOfSkn) {
 		//(t-1) Distance data per segment are calculated into (t-1) Velocity data per segment ( t=4 as default)
-		double [][] distance = getDistanceList(jointspos, sampleingRateOfSkn,frameSizePerSeg);
-		double [][] speed = new double[3][distance[0].length];
+		double [][] displacement = getDisplacement(someoneJointsPos);
+		double [][] velocity = new double[3][displacement[0].length];
 		
-		for (int i = 0; i < distance[0].length; i++) {
+		for (int i = 0; i < displacement[0].length; i++) {
 			for (int axis = 0; axis < 3; axis++) {
-				speed[axis][i] = distance[axis][i] * sampleingRateOfSkn;
+				velocity[axis][i] = displacement[axis][i] * sampleingRateOfSkn;
 			}
 		}
 		
-		return speed;
+		return velocity;
 	}
 	
 	/**
@@ -73,29 +66,25 @@ public class SkeletonInfo {
 	* 
 	* @return: arrays of acceleration in each axis
 	*/
-	public static double[][] getAccList(ArrayList<Skeleton> certainJointsPos, int sampleingRateOfSkn ,int frameSizePerSeg) {
+	public static void setAccelerateion(ArrayList<Skeleton> someoneJointsPos, ArrayList<SkeletonAcc> skeletons_acc, int sampleingRateOfSkn, double thresholdSkeletonAcc) {
 		//(t-1) Velocity data per segment are calculated into (t-2) Acceleration data per segment ( t=4 as default)
-		double[][] speed = getSpeedList(certainJointsPos, sampleingRateOfSkn, frameSizePerSeg);
-		double[][] acc = new double[3][speed[0].length/(frameSizePerSeg-1)*(frameSizePerSeg-2)];
-		int len = 0;
+		double[][] velocity = getVelocity(someoneJointsPos, sampleingRateOfSkn);
+		double[]acc = new double[3];
 		
-		for (int i = 0; i < speed[0].length; i += (frameSizePerSeg-1)) {
-			if(i+(frameSizePerSeg-1) > speed[0].length) {
-				break;
-			}
-			double[] subspeed_x = Arrays.copyOfRange(speed[0], i, i + (frameSizePerSeg-1));
-			double[] subspeed_y = Arrays.copyOfRange(speed[1], i, i + (frameSizePerSeg-1));
-			double[] subspeed_z = Arrays.copyOfRange(speed[2], i, i + (frameSizePerSeg-1));
-			for (int j = 0; j < (frameSizePerSeg-2); j++) {
-				acc[0][len] = (subspeed_x[j + 1] - subspeed_x[j]) * sampleingRateOfSkn;
-				acc[1][len] = (subspeed_y[j + 1] - subspeed_y[j]) * sampleingRateOfSkn;
-				acc[2][len] = (subspeed_z[j + 1] - subspeed_z[j]) * sampleingRateOfSkn;
-				len++;
-			}
+		for (int i = 0; i < velocity[0].length-1; i++) {
+			acc[0] = (velocity[0][i+1] - velocity[0][i]) * sampleingRateOfSkn;
+			acc[1] = (velocity[1][i+1] - velocity[1][i]) * sampleingRateOfSkn;
+			acc[2]= (velocity[2][i+1] - velocity[2][i]) * sampleingRateOfSkn;
+			
+			if(Math.abs(acc[0]) < thresholdSkeletonAcc)
+				acc[0] = 0;
+			if(Math.abs(acc[1]) < thresholdSkeletonAcc)
+				acc[1] = 0;
+			if(Math.abs(acc[2]) < thresholdSkeletonAcc)
+				acc[2] = 0;
+			
+			skeletons_acc.add(new SkeletonAcc(acc[0], acc[1], acc[2]));
 		}
-		
-		return acc;
-		
 	}
 	
 }

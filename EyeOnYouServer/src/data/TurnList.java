@@ -21,21 +21,20 @@ public class TurnList {
 		this.StillTurnList = stillTurnList;
 		this.MoveTurnList = moveTurnList;
 	}
-	
-	public ArrayList<STurn> getStillTurnList() {
-		return StillTurnList;
-	}
 
 	public void setStillTurnList(ArrayList<STurn> stillTurnList) {
 		StillTurnList = stillTurnList;
-	}
-
-	public ArrayList<MTurn> getMoveTurnList() {
-		return MoveTurnList;
 	}
 
 	public void setMoveTurnList(ArrayList<MTurn> moveTurnList) {
 		MoveTurnList = moveTurnList;
 	}
 	
+	public ArrayList<MTurn> getMoveTurnList() {
+		return MoveTurnList;
+	}
+	
+	public ArrayList<STurn> getStillTurnList() {
+		return StillTurnList;
+	}
 }

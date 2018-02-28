@@ -6,8 +6,10 @@ import java.util.Arrays;
 
 import data.Turn;
 import data.TurnList;
+import data.Inertial;
 import data.MTurn;
 import data.STurn;
+import data.SkeletonAcc;
 
 /**
  * This class is used to calculate similarity score with a certain fusion
@@ -59,27 +61,28 @@ public class FusionAlgo {
 	 * 
 	 * @return: similarity score
 	 */
-	public static double calResult_alg2(TurnList fromVideo, TurnList fromIMU) {
-		double[][] KinectAccSeq = getAccSeq(fromVideo);
-		double[][] IMUAccSeq = getAccSeq(fromIMU);
-		int lag = 40;
-
-		for (int i = 0; i < 4; i++) {
-			IMUAccSeq[i] = Arrays.copyOf(IMUAccSeq[i], KinectAccSeq[i].length);
-		}
-
-		double[] xcorr = calXCorr(KinectAccSeq[0], IMUAccSeq[0], lag);
-		double max = 0;
-		for (int i = 0; i < 2 * lag + 1; i++) {
-			max = (xcorr[i] > max) ? xcorr[i] : max;
-		}
-
-		return max;
-
-	}
+//	public static double calResult_alg2(TurnList fromVideo, TurnList fromIMU) {
+//		double[][] KinectAccSeq = getAccSeq(fromVideo);
+//		double[][] IMUAccSeq = getAccSeq(fromIMU);
+//		int lag = 40;
+//
+//		for (int i = 0; i < 4; i++) {
+//			IMUAccSeq[i] = Arrays.copyOf(IMUAccSeq[i], KinectAccSeq[i].length);
+//		}
+//
+//		double[] xcorr = calXCorr(KinectAccSeq[0], IMUAccSeq[0], lag);
+//		double max = 0;
+//		for (int i = 0; i < 2 * lag + 1; i++) {
+//			max = (xcorr[i] > max) ? xcorr[i] : max;
+//		}
+//
+//		return max;
+//
+//	}
 
 	/**
-	 * calculate similarity score with 3AC algorithm
+	 * Calculate similarity score with 3AC algorithm
+	 * 02/28/2018 
 	 * 
 	 * @param: turn
 	 *             recorded form skeleton data
@@ -88,54 +91,61 @@ public class FusionAlgo {
 	 * 
 	 * @return: similarity score
 	 */
-	public static double calResult_alg3(TurnList fromVideo, TurnList fromIMU) {
-		double[][] KinectAccSeq = getAccSeq(fromVideo);
-		double[][] IMUAccSeq = getAccSeq(fromIMU);
-		double[][] xcorr = new double[3][];
-		int lag = 40;
-
-		System.out.println("KinectAccSeq");
-		for (int i = 0; i < KinectAccSeq[0].length; i++) {
-			System.out.println( KinectAccSeq[0][i] );
-		}
-		System.out.println("IMUAccSeq");
-		for (int i = 0; i < IMUAccSeq[0].length; i++) {
-			System.out.println( IMUAccSeq[0][i] );
-		}
+	public static double calResult_alg3(ArrayList<SkeletonAcc> fromSkelton, ArrayList<Inertial> fromIMU) {
+		double[][] KinectAccSeq = getSkeletonAccSeq(fromSkelton);
+		double[][] IMUAccSeq = getIMUAccSeq(fromIMU);
+		double scoringResult = 0;
 		
-		for (int i = 0; i < 4; i++) {
-			IMUAccSeq[i] = Arrays.copyOf(IMUAccSeq[i], KinectAccSeq[i].length);
-		}
-
-		xcorr[0] = calXCorr(KinectAccSeq[1], IMUAccSeq[2], lag);
-		xcorr[1] = calXCorr(KinectAccSeq[2], IMUAccSeq[3], lag);
-		xcorr[2] = calXCorr(KinectAccSeq[3], IMUAccSeq[1], lag);
-		/*
-		 * for (int i = 0; i < xcorr[0].length; i++) { System.out.println(xcorr[0][i]);
-		 * }
-		 */
-
-		/*
-		 * for (int i = 0; i < KinectAccSeq[0].length; i++) { System.out.printf("%f ",
-		 * KinectAccSeq[2][i]); } System.out.println("");
-		 * 
-		 * for (int i = 0; i < IMUAccSeq[0].length; i++) { System.out.printf("%f ",
-		 * IMUAccSeq[3][i]); } System.out.println("");
-		 */
-
-		double max = 0;
-		for (int i = 0; i < 2 * lag + 1; i++) {
-			// System.out.println(xcorr[2][i]);
-			double tmpXCorr = xcorr[0][i] + xcorr[1][i] + xcorr[2][i];
-			max = (tmpXCorr > max) ? tmpXCorr : max;
-		}
-		/*
-		 * for (int i = 0; i < 3; i++) { double tmpXCorr = -1; for (int j = 0; j < 2 *
-		 * lag + 1; j++) { tmpXCorr = (tmpXCorr > xcorr[i][j])?tmpXCorr:xcorr[i][j]; }
-		 * max += tmpXCorr; }
-		 */
-
-		return max;
+		DTWSimilarity dtw = new DTWSimilarity();
+		scoringResult = dtw.similarity(KinectAccSeq[1], IMUAccSeq[2]) + dtw.similarity(KinectAccSeq[2], IMUAccSeq[3]) + dtw.similarity(KinectAccSeq[3], IMUAccSeq[1]);
+		scoringResult = scoringResult/3;
+		return scoringResult;
+        
+//		double[][] xcorr = new double[3][];
+//		int lag = 40;
+//
+//		System.out.println("KinectAccSeq");
+//		for (int i = 0; i < KinectAccSeq[0].length; i++) {
+//			System.out.println( KinectAccSeq[0][i] );
+//		}
+//		System.out.println("IMUAccSeq");
+//		for (int i = 0; i < IMUAccSeq[0].length; i++) {
+//			System.out.println( IMUAccSeq[0][i] );
+//		}
+//		
+//		for (int i = 0; i < 4; i++) {
+//			IMUAccSeq[i] = Arrays.copyOf(IMUAccSeq[i], KinectAccSeq[i].length);
+//		}
+//
+//		xcorr[0] = calXCorr(KinectAccSeq[1], IMUAccSeq[2], lag);
+//		xcorr[1] = calXCorr(KinectAccSeq[2], IMUAccSeq[3], lag);
+//		xcorr[2] = calXCorr(KinectAccSeq[3], IMUAccSeq[1], lag);
+//		/*
+//		 * for (int i = 0; i < xcorr[0].length; i++) { System.out.println(xcorr[0][i]);
+//		 * }
+//		 */
+//
+//		/*
+//		 * for (int i = 0; i < KinectAccSeq[0].length; i++) { System.out.printf("%f ",
+//		 * KinectAccSeq[2][i]); } System.out.println("");
+//		 * 
+//		 * for (int i = 0; i < IMUAccSeq[0].length; i++) { System.out.printf("%f ",
+//		 * IMUAccSeq[3][i]); } System.out.println("");
+//		 */
+//
+//		double max = 0;
+//		for (int i = 0; i < 2 * lag + 1; i++) {
+//			// System.out.println(xcorr[2][i]);
+//			double tmpXCorr = xcorr[0][i] + xcorr[1][i] + xcorr[2][i];
+//			max = (tmpXCorr > max) ? tmpXCorr : max;
+//		}
+//		/*
+//		 * for (int i = 0; i < 3; i++) { double tmpXCorr = -1; for (int j = 0; j < 2 *
+//		 * lag + 1; j++) { tmpXCorr = (tmpXCorr > xcorr[i][j])?tmpXCorr:xcorr[i][j]; }
+//		 * max += tmpXCorr; }
+//		 */
+//
+//		return max;
 
 	}
 
@@ -402,7 +412,37 @@ public class FusionAlgo {
 		return new double[] { penalty, penaltyCnt };
 	}
 
-	private static double[][] getAccSeq(TurnList turnsList) {
+	private static double[][] getSkeletonAccSeq(ArrayList<SkeletonAcc> fromSkelton) {
+		double[][] AccSeq = new double[4][fromSkelton.size()];
+		double[] Acc = new double[3];
+		
+		for(int i=0; i < fromSkelton.size(); i++) {
+			Acc = fromSkelton.get(i).getAccRight_wrist();
+			AccSeq[0][i] = (Acc[0]+Acc[1]+Acc[2]) / 3.0;
+			AccSeq[1][i] = Acc[0];
+			AccSeq[2][i] = Acc[1];
+			AccSeq[3][i] = Acc[2];
+		}
+		
+		return AccSeq;
+	}
+
+	private static double[][] getIMUAccSeq(ArrayList<Inertial> fromIMU) {
+		double[][] AccSeq = new double[4][fromIMU.size()];
+		double[] Acc = new double[3];
+		
+		for(int i=0; i < fromIMU.size(); i++) {
+			Acc = fromIMU.get(i).getAcc();
+			AccSeq[0][i] = (Acc[0]+Acc[1]+Acc[2]) / 3.0;
+			AccSeq[1][i] = Acc[0];
+			AccSeq[2][i] = Acc[1];
+			AccSeq[3][i] = Acc[2];
+		}
+		
+		return AccSeq;
+	}
+	
+	private static double[][] getAccSeq(TurnList turnsList, double durationPerSeg) {
 		ArrayList<MTurn> MTurns = turnsList.getMoveTurnList();
 		ArrayList<STurn> STurns = turnsList.getStillTurnList();
 		ArrayList<Double> acc = new ArrayList<Double>();
@@ -433,7 +473,7 @@ public class FusionAlgo {
 			for (int k = 0; k < STurns.size(); k++) {
 				double dur = new BigDecimal(STurns.get(i).getEndTime() - STurns.get(i).getStartTime())
 						.setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
-				time = new BigDecimal(dur / 0.1).setScale(0, BigDecimal.ROUND_HALF_DOWN).intValue();
+				time = new BigDecimal(dur / durationPerSeg).setScale(0, BigDecimal.ROUND_HALF_DOWN).intValue();
 				for (int t = 0; t < time; t++) {
 					acc.add(0.0);
 					accX.add(0.0);
@@ -449,7 +489,7 @@ public class FusionAlgo {
 						&& STurns.get(i).getStartTime() < MTurns.get(j).getStartTime()) {
 					double dur = new BigDecimal(STurns.get(i).getEndTime() - STurns.get(i).getStartTime())
 							.setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
-					time = new BigDecimal(dur / 0.1).setScale(0, BigDecimal.ROUND_HALF_DOWN).intValue();
+					time = new BigDecimal(dur / durationPerSeg).setScale(0, BigDecimal.ROUND_HALF_DOWN).intValue();
 					for (int t = 0; t < time; t++) {
 						acc.add(0.0);
 						accX.add(0.0);
@@ -483,7 +523,7 @@ public class FusionAlgo {
 			while (i < STurns.size()) {
 				double dur = new BigDecimal(STurns.get(i).getEndTime() - STurns.get(i).getStartTime())
 						.setScale(1, BigDecimal.ROUND_HALF_DOWN).doubleValue();
-				time = new BigDecimal(dur / 0.1).setScale(1, BigDecimal.ROUND_HALF_DOWN).intValue();
+				time = new BigDecimal(dur / durationPerSeg).setScale(1, BigDecimal.ROUND_HALF_DOWN).intValue();
 				for (int t = 0; t < time; t++) {
 					acc.add(0.0);
 					accX.add(0.0);

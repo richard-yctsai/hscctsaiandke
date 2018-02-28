@@ -12,12 +12,15 @@ import com.opencsv.CSVWriter;
 import data.HeadPos;
 import data.Inertial;
 import data.Skeleton;
+import data.SkeletonAcc;
 import data.TurnList;
 import preprocess.BodyExtraction;
 import preprocess.Filter;
 import preprocess.ProcessTool;
 import preprocess.ReadData;
+import preprocess.SkeletonInfo;
 import preprocess.TurnMag;
+import scoring.DTWSimilarity;
 import scoring.FusionAlgo;
 
 import eyeonyouserver.MainServerSocket;
@@ -27,14 +30,26 @@ public class PID {
 	 * @author PID class is transformed from WeiChun's EyeOnYou Demo code.
 	 */
 	
-	public static int collectSeconds = 5;
-	public static int sampleingRateOfSkn = 16;
-	public static int sampleingRateOfItl = 100;
+	// 1. DTW or directly check cross correlation.
+	// 2. samplingRateOfSkn should be retrieved by file size.
 	
-	public static void startPairing() {
+	public static int collectSeconds = 5;
+	public static int sampleingRateOfSkn = 0;
+	public static int sampleingRateOfItl = 0;
+
+	final static double thresholdSkeletonAcc = 2;
+	final static double thresholdInertialAcc = 5;
+//	final static double durationPerSeg = 0.2; // 0.2secs/segment
+//	final static int frameSizePerSeg = (int)(sampleingRateOfSkn* durationPerSeg); // 18frames * 0.2secs = 3frames/segment
+	
+	public static void main(String[] args) throws IOException {
+		startPairing();
+	}
+	
+	public static void startPairing() throws IOException {
 		
-		int framesOfSkeletonSegment = collectSeconds*sampleingRateOfSkn*8/10; // 13 samples in 1 seconds
-		int framesOfInnertialSegment = collectSeconds*sampleingRateOfItl*8/10; // 100 samples in 1 seconds
+		int framesOfSkeleton = 10000; // 80 samples within 5 seconds
+		int framesOfInnertial = 10000; // 500 samples wihtin 5 seconds
 		String rootDir = "C:/Users/Public/Data";
 		ArrayList<String> I_usersName = new ArrayList<String>();
 		ArrayList<Integer> S_skeletonsID = new ArrayList<Integer>();
@@ -65,29 +80,66 @@ public class PID {
 		
 		// Read skeleton data and inertial data of each person
 		ArrayList<ArrayList<Skeleton>> skeletons_set = new ArrayList<ArrayList<Skeleton>>();
+		ArrayList<ArrayList<SkeletonAcc>> skeletons_acc_set = new ArrayList<ArrayList<SkeletonAcc>>();
 		ArrayList<ArrayList<Inertial>> inertials_set = new ArrayList<ArrayList<Inertial>>();
 		for (int i = 0; i < S_skeletonsID.size(); i++) {
-			ArrayList<Skeleton> jointsKinect = ReadData.readKinect_smooth(rootDir + "/KINECTData/VSFile_" + i + ".csv");
+			ArrayList<Skeleton> jointsKinect = ReadData.readKinect(rootDir + "/KINECTData/VSFile_" + i + ".csv");
 			skeletons_set.add(jointsKinect);
+			
+			int tempFramesOfSkeleton = ReadData.countFileLine(rootDir + "/KINECTData/VSFile_" + i + ".csv");
+			if (tempFramesOfSkeleton > collectSeconds*16*(8.0/10) && framesOfSkeleton > tempFramesOfSkeleton) {
+				framesOfSkeleton = tempFramesOfSkeleton;
+			}
 		}
+		sampleingRateOfSkn = framesOfSkeleton / collectSeconds;
+		System.out.println("framesOfSkeleton: " + framesOfSkeleton + ", sampleingRateOfSkn: " + sampleingRateOfSkn);
+		
+		// Calculate Skeleton Acceleration based on Read Skeleton Position
+		for (int i = 0; i < S_skeletonsID.size(); i++) {
+			ArrayList<SkeletonAcc> skeletons_acc= new ArrayList<SkeletonAcc>();;
+			SkeletonInfo.setAccelerateion(skeletons_set.get(i), skeletons_acc, sampleingRateOfSkn, thresholdSkeletonAcc);
+			skeletons_acc_set.add(skeletons_acc);
+		}
+		
 		for (int i = 0; i < I_usersName.size(); i++) {
-			ArrayList<Inertial> jointsIMU = ReadData.readIMU(rootDir + "/IMUData/" + I_usersName.get(i) + ".csv");
+			ArrayList<Inertial> jointsIMU = ReadData.readIMU(rootDir + "/IMUData/" + I_usersName.get(i) + ".csv", thresholdInertialAcc);
 			inertials_set.add(jointsIMU);
+			
+			int tempFramesOfInnertial = ReadData.countFileLine(rootDir + "/IMUData/" + I_usersName.get(i) + ".csv");
+			if (tempFramesOfInnertial > collectSeconds*100*(8.0/10) && framesOfInnertial > tempFramesOfInnertial) {
+				framesOfInnertial = tempFramesOfInnertial;
+			}
 		}
+		sampleingRateOfItl = framesOfInnertial / collectSeconds;
+		System.out.println("framesOfInnertial: " + framesOfInnertial + ", sampleingRateOfItl: " + sampleingRateOfItl);
+		
+		System.out.println("0-inertial");
+		for( int i = 0; i <inertials_set.get(0).size();i++) {
+			System.out.println(inertials_set.get(0).get(i).getAcc()[0]);
+		}
+		System.out.println("0-skeleton");
+		for( int i = 0; i <skeletons_acc_set.get(0).size();i++) {
+			System.out.println(skeletons_acc_set.get(0).get(i).getAccRight_wrist()[0]);
+		}
+//		System.out.println("1-inertial");
+//		for( int i = 0; i <inertials_set.get(1).size();i++) {
+//			System.out.println(inertials_set.get(1).get(i).getAcc()[0]);
+//		}
+//		System.out.println("1-skeleton");
+//		for( int i = 0; i <skeletons_acc_set.get(1).size();i++) {
+//			System.out.println(skeletons_acc_set.get(1).get(i).getAccRight_wrist()[0]);
+//		}
+		
 		
 		//Pair skeleton data with users' IDs every 5 seconds
 		ArrayList<Double> scores = new ArrayList<Double>();
-		System.out.println("*************************");
-		for (int i = 0; i < skeletons_set.size(); i++) {
+        System.out.println("*************************");
+		for (int i = 0; i < skeletons_acc_set.size(); i++) {
 			for (int j = 0; j < inertials_set.size(); j++) {
-				ArrayList<Skeleton> sub_skeletons = new ArrayList<Skeleton>(skeletons_set.get(i).subList(0, framesOfSkeletonSegment));
-				ArrayList<Inertial> sub_inertials = new ArrayList<Inertial>(inertials_set.get(j).subList(0, framesOfInnertialSegment));
 				
-				TurnList kinectTurns = TurnMag.genKINECTTurnList(sub_skeletons, sampleingRateOfSkn);
-				TurnList imuTurns = TurnMag.genIMUTurnList(sub_inertials, sampleingRateOfItl);
 				
 				double score = 0;
-				score = FusionAlgo.calResult_alg3(kinectTurns, imuTurns);
+				score = FusionAlgo.calResult_alg3(skeletons_acc_set.get(i), inertials_set.get(j));
 				scores.add(score);
 				System.out.println("Scores: (i=" + i + ", j=" + j + ") -> " + score);
 			}

@@ -8,6 +8,7 @@ package data;
 public class Skeleton {
 	
 	private double[] right_wrist;
+	private double[] acc; //Input 3-axis values into double array
 	
 	public Skeleton() {
 		
@@ -23,6 +24,10 @@ public class Skeleton {
 
 	public void setRight_wrist(double[] right_wrist) {
 		this.right_wrist = right_wrist;
+	}
+	
+	public void setAcc() {
+		
 	}
 	
 }

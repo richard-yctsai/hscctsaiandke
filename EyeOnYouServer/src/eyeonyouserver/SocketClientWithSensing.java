@@ -21,7 +21,12 @@ public class SocketClientWithSensing {
 
         public void run() {
         	System.out.println("\n==========\n3. The EyeOnYouServer is performing PID.\n==========\n");
-        	PID.startPairing();
+        	try {
+				PID.startPairing();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
 
 

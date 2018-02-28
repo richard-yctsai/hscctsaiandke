@@ -1,7 +1,10 @@
 package preprocess;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import com.opencsv.CSVReader;
@@ -99,16 +102,30 @@ public class ReadData {
 	* 
 	* @return: list of Inertia objects 
 	*/
-	public static ArrayList<Inertial> readIMU(String file) {
+	public static ArrayList<Inertial> readIMU(String file, double thresholdInertialAcc) {
 		
 		ArrayList<Inertial> imu_6 = new ArrayList<Inertial>();
+		double[] acc = new double[3];
 		
 		CSVReader cr = null;
 		try {
 			cr = new CSVReader(new FileReader(file));
 			String[] line;
 			while ((line = cr.readNext()) != null) {
-				Inertial sixaxis = new Inertial(Double.valueOf(line[0]), Double.valueOf(line[1]), Double.valueOf(line[2]));
+				if(Math.abs(Double.valueOf(line[0])) > thresholdInertialAcc)
+					acc[0] = Double.valueOf(line[0]);
+				else
+					acc[0] = 0;
+				if(Math.abs(Double.valueOf(line[1])) > thresholdInertialAcc)
+					acc[1] = Double.valueOf(line[1]);
+				else
+					acc[1] = 0;
+				if(Math.abs(Double.valueOf(line[2])) > thresholdInertialAcc)
+					acc[2] = Double.valueOf(line[2]);
+				else
+					acc[2] = 0;
+				
+				Inertial sixaxis = new Inertial(acc[0], acc[1], acc[2]);
 				imu_6.add(sixaxis);
 			}
 			cr.close();
@@ -117,8 +134,29 @@ public class ReadData {
 		}
 		
 		return imu_6;
-	
 	}
+	
+	public static int countFileLine(String filename) throws IOException {
+	    InputStream is = new BufferedInputStream(new FileInputStream(filename));
+	    try {
+	    byte[] c = new byte[1024];
+	    int count = 0;
+	    int readChars = 0;
+	    boolean empty = true;
+	    while ((readChars = is.read(c)) != -1) {
+	        empty = false;
+	        for (int i = 0; i < readChars; ++i) {
+	            if (c[i] == '\n') {
+	                ++count;
+	            }
+	        }
+	    }
+	    return (count == 0 && !empty) ? 1 : count;
+	    } finally {
+	    is.close();
+	   }
+	}
+	
 	
 	/**
 	* read XY positions of head in the video frames and store in HeadPos objects 
