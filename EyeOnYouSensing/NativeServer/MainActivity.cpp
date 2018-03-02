@@ -36,6 +36,9 @@ using namespace std;
 // temporary coordinate
 float tmpWR_JointPos[3];
 
+int RobotVelocity = 0;
+const int intervalVelocity = 4;
+int LastMovingAction = 0; // 0: stop, 1: forward, 2: backward
 const int Max_Char = 500;
 char cmdLinePID[Max_Char] = "java -cp \"C:/Users/Richard Yi-Chia TSAI/Desktop/eclipse/JAR/*;C:/Users/Richard Yi-Chia TSAI/Desktop/hscctsaiandke/EyeOnYouPID/bin\" pairing.Demo";
 //char cmdLineRobot[Max_Char] = "java -cp \"C:/Users/Richard Yi-Chia TSAI/Desktop/eclipse/JAR/*;C:/Users/Richard Yi-Chia TSAI/Desktop/EyeOnYouiRobot/bin\" roombacomm.eyeonyourobot.EyeOnYouRobotTracking COM3 OI ";
@@ -43,7 +46,7 @@ char cmdLinePID[Max_Char] = "java -cp \"C:/Users/Richard Yi-Chia TSAI/Desktop/ec
 
 void DrawLine(cv::Mat& rImg, const Joint& rJ1, const Joint& rJ2, ICoordinateMapper* pCMapper);
 void DrawJoint(cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper);
-void robotTracking(string ID, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper);
+void robotTracking(string ID, cv::Mat& rImg, const Joint* rJ1, ICoordinateMapper* pCMapper);
 void DrawIdentity(string ID, string NAME, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper);
 void writeInfo(int, ofstream&, Joint*, ICoordinateMapper*, char*);
 
@@ -316,7 +319,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 							writeInfo(i, csvfile, aJoints, pCoordinateMapper, time_str);
 
-							robotTracking(to_string(i), mImg, aJoints[JointType::JointType_Head], pCoordinateMapper);
+							robotTracking(to_string(i), mImg, aJoints, pCoordinateMapper);
 
 							DrawIdentity(to_string(i), VotingPID::getnameVotingWithIndex(i), mImg, aJoints[JointType::JointType_Head], pCoordinateMapper);
 						}
@@ -329,10 +332,20 @@ int _tmain(int argc, _TCHAR* argv[])
 					}
 				}
 
-				if (step % 20 == 0 && realiBodyCount == 0)
+				if (realiBodyCount == 0) //step % 20 == 0 && 
 				{
-					RobotDrive::setDrivetowhere("stop");
-					RobotDrive::setDriveunit(0);
+					if (LastMovingAction == 1) {
+						RobotDrive::setDrivetowhere("forward");
+						RobotDrive::setDriveunit(RobotVelocity);
+					}
+					else if (LastMovingAction == 2) {
+						RobotDrive::setDrivetowhere("backward");
+						RobotDrive::setDriveunit(RobotVelocity);
+					}
+
+					RobotVelocity = RobotVelocity - intervalVelocity;
+					if (RobotVelocity <= 0)
+						RobotVelocity = 0;
 				}
 
 				//if (step != 0 && (step % 30 == 0) && PIDRun::getExecutePID() == true)
@@ -474,40 +487,71 @@ void DrawJoint(cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper)
 	}
 }
 
-void robotTracking(string ID, cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper)
+void robotTracking(string ID, cv::Mat& rImg, const Joint* rJ1, ICoordinateMapper* pCMapper)
 {
-	if (rJ1.TrackingState == TrackingState_NotTracked)
-		return;
+	double thresholdMaxZ = 2.5;
+	double thresholdMinZ = 1.4;
+	double thresholdMaxX = 0.3;
+	double thresholdMinX = -0.3;
 
-	ColorSpacePoint ptJ1;
-	pCMapper->MapCameraPointToColorSpace(rJ1.Position, &ptJ1);
+	const Joint& SM_JointPos = rJ1[JointType::JointType_SpineMid];
+	const Joint& HEAD_JointPos = rJ1[JointType::JointType_Head];
 
-	if ((ptJ1.X >= 0 && ptJ1.X <= rImg.cols) && (ptJ1.Y >= 0 && ptJ1.Y <= rImg.rows)) {
-		//putText(rImg, ID, cv::Point(ptJ1.X, ptJ1.Y - 50), 0, 3, cv::Scalar(255, 0, 0), 6);	// draw IDs of each user
-		//putText(rImg, to_string(rJ1.Position.X), cv::Point(ptJ1.X, ptJ1.Y - 300), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw X axis of each user
-		//putText(rImg, to_string(rJ1.Position.Y), cv::Point(ptJ1.X, ptJ1.Y - 200), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw Y axis of each user
-		//putText(rImg, to_string(rJ1.Position.Z), cv::Point(ptJ1.X, ptJ1.Y - 100), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw Z axis of each user
+	ColorSpacePoint ptJ_SpineMid;
+	pCMapper->MapCameraPointToColorSpace(SM_JointPos.Position, &ptJ_SpineMid);
+
+	ColorSpacePoint ptJ1_Head;
+	pCMapper->MapCameraPointToColorSpace(HEAD_JointPos.Position, &ptJ1_Head);
+
+	if ((ptJ1_Head.X >= 0 && ptJ1_Head.X <= rImg.cols) && (ptJ1_Head.Y >= 0 && ptJ1_Head.Y <= rImg.rows)) {
+		putText(rImg, ID, cv::Point(ptJ1_Head.X, ptJ1_Head.Y - 50), 0, 3, cv::Scalar(255, 0, 0), 6);	// draw IDs of each user
+		//putText(rImg, to_string(SM_JointPos.Position.X), cv::Point(ptJ_SpineMid.X, ptJ_SpineMid.Y - 300), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw X axis of each user
+		//putText(rImg, to_string(SM_JointPos.Position.Y), cv::Point(ptJ_SpineMid.X, ptJ_SpineMid.Y - 200), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw Y axis of each user
+		//putText(rImg, to_string(SM_JointPos.Position.Z), cv::Point(ptJ_SpineMid.X, ptJ_SpineMid.Y - 100), 0, 3, cv::Scalar(255, 255, 0), 6);	// draw Z axis of each user
 	}
 
-	if ((rJ1.Position.Z <= 4 && rJ1.Position.Z >= 3) || (rJ1.Position.X <= 0.5 && rJ1.Position.X >= -0.5)) {
+	if (SM_JointPos.Position.X <= thresholdMaxX && SM_JointPos.Position.X >= thresholdMinX) {
 		RobotDrive::setDrivetowhere("stop");
 		RobotDrive::setDriveunit(0);
+
+		if (SM_JointPos.Position.Z <= thresholdMaxZ && SM_JointPos.Position.Z >= thresholdMinZ) {
+			if (LastMovingAction == 1) {
+				RobotDrive::setDrivetowhere("forward");
+				RobotDrive::setDriveunit(RobotVelocity);
+			}
+			else if (LastMovingAction == 2) {
+				RobotDrive::setDrivetowhere("backward");
+				RobotDrive::setDriveunit(RobotVelocity);
+			}
+
+			RobotVelocity = RobotVelocity - intervalVelocity;
+			if (RobotVelocity <= 0)
+				RobotVelocity = 0;
+		}
+		else if (SM_JointPos.Position.Z > thresholdMaxZ) {
+			LastMovingAction = 1;
+			RobotDrive::setDrivetowhere("forward");
+			RobotDrive::setDriveunit(RobotVelocity);
+			RobotVelocity = RobotVelocity + intervalVelocity;
+			if (RobotVelocity > 300)
+				RobotVelocity = 300;
+		}
+		else if (SM_JointPos.Position.Z < thresholdMinZ) {
+			LastMovingAction = 2;
+			RobotDrive::setDrivetowhere("backward");
+			RobotDrive::setDriveunit(RobotVelocity);
+			RobotVelocity = RobotVelocity + intervalVelocity;
+			if (RobotVelocity > 300)
+				RobotVelocity = 300;
+		}
 	}
-	if (rJ1.Position.Z > 4) {
-		RobotDrive::setDrivetowhere("forward");
-		RobotDrive::setDriveunit(300);
-	}
-	if (rJ1.Position.Z < 3) {
-		RobotDrive::setDrivetowhere("backward");
-		RobotDrive::setDriveunit(300);
-	}
-	if (rJ1.Position.X < -0.5) {
+	else if (SM_JointPos.Position.X < thresholdMinX) {
 		RobotDrive::setDrivetowhere("spinright");
-		RobotDrive::setDriveunit(15);
+		RobotDrive::setDriveunit(70);
 	}
-	if (rJ1.Position.X > 0.5) {
+	else if (SM_JointPos.Position.X > thresholdMaxX) {
 		RobotDrive::setDrivetowhere("spinleft");
-		RobotDrive::setDriveunit(15);
+		RobotDrive::setDriveunit(70);
 	}
 }
 
