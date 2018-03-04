@@ -91,12 +91,14 @@ public class DriveBasedOnKinect {
         	    // Your database code here
         		  client.requestRandomNumber();
         	  }
-        	}, 1000, 1000);
+        	}, 500, 100);
         
         if( args.length < 1 ) {
             System.out.println( usage );
             System.exit(0);
         }
+        
+        roombacomm.stop();
     }
     
     /***
@@ -116,21 +118,27 @@ public class DriveBasedOnKinect {
         System.out.println(rec_drivetowhere);
         System.out.println(rec_driveunit);
         
-        if(drivetowhere.equals("stop"))
+        if(drivetowhere.equals("stop")) {
         	roombacomm.stop();
+        	
+        }
         else if(drivetowhere.equals("forward"))
         {
-        	roombacomm.setSpeed(80);
-        	roombacomm.goForward(driveunit);
+        	roombacomm.setSpeed(driveunit);
+        	roombacomm.goForward();
         }
         else if(drivetowhere.equals("backward"))
         {
-        	roombacomm.setSpeed(80);
-        	roombacomm.goBackward(driveunit);
+        	roombacomm.setSpeed(driveunit);
+        	roombacomm.goBackward();
         }
-        else if(drivetowhere.equals("spinleft"))
-        	roombacomm.spinLeft(driveunit);
-        else if(drivetowhere.equals("spinright"))
-        	roombacomm.spinRight(driveunit);
+        else if(drivetowhere.equals("spinleft")) {
+        	roombacomm.setSpeed(driveunit);
+        	roombacomm.spinLeft();
+        }
+        else if(drivetowhere.equals("spinright")){
+        	roombacomm.setSpeed(driveunit);
+        	roombacomm.spinRight();
+        }
     }
 }

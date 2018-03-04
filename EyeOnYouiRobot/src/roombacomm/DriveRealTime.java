@@ -35,13 +35,6 @@ import java.awt.event.*;
    Usage: 
    roombacomm.DriveRealTime serialportname [protocol] [options]<br>
    
-   
-   
-   
-   
-   
-   
-   
    where: 
   k protocol (optional) is SCI or OI 
    [options] can be one or more of:
@@ -119,26 +112,30 @@ public class DriveRealTime extends JFrame implements KeyListener {
         else if( keyCode == KeyEvent.VK_UP ) {
             updateDisplay("forward");
             roombacomm.goForward();
+            updateDisplay(String.valueOf( roombacomm.getSpeed() ));
         }
         else if( keyCode == KeyEvent.VK_DOWN ) {
             updateDisplay("backward");
             roombacomm.goBackward();
+            updateDisplay(String.valueOf( roombacomm.getSpeed() ));
         }
         else if( keyCode == KeyEvent.VK_LEFT ) {
             updateDisplay("spinleft");
             roombacomm.spinLeft();
+            updateDisplay(String.valueOf( roombacomm.getSpeed() ));
         }
         else if( keyCode == KeyEvent.VK_RIGHT ) {
             updateDisplay("spinright");
+            updateDisplay(String.valueOf( roombacomm.getSpeed() ));
             roombacomm.spinRight();
         }
         else if( keyCode == KeyEvent.VK_COMMA ) {
             updateDisplay("speed down");
-            roombacomm.setSpeed( roombacomm.getSpeed() - 50 );
+            roombacomm.setSpeed( roombacomm.getSpeed() - 10 );
         }
         else if( keyCode == KeyEvent.VK_PERIOD ) {
-            updateDisplay("speed up");
-            roombacomm.setSpeed( roombacomm.getSpeed() + 50 );
+            updateDisplay("speed up");	
+            roombacomm.setSpeed( roombacomm.getSpeed() + 10 );
         }
         else if( keyCode == KeyEvent.VK_R ) {
             updateDisplay("reset");
