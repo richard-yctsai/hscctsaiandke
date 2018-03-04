@@ -36,8 +36,9 @@ using namespace std;
 // temporary coordinate
 float tmpWR_JointPos[3];
 
+string FollowingTarget = "Tsai";
 int RobotVelocity = 0;
-const int intervalVelocity = 4;
+const int IntervalVelocity = 4;
 int LastMovingAction = 0; // 0: stop, 1: forward, 2: backward
 const int Max_Char = 500;
 char cmdLinePID[Max_Char] = "java -cp \"C:/Users/Richard Yi-Chia TSAI/Desktop/eclipse/JAR/*;C:/Users/Richard Yi-Chia TSAI/Desktop/hscctsaiandke/EyeOnYouPID/bin\" pairing.Demo";
@@ -319,7 +320,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 							writeInfo(i, csvfile, aJoints, pCoordinateMapper, time_str);
 
-							robotTracking(to_string(i), mImg, aJoints, pCoordinateMapper);
+							if (!VotingPID::getnameVotingWithIndex(i).compare(FollowingTarget))
+								robotTracking(to_string(i), mImg, aJoints, pCoordinateMapper);
 
 							DrawIdentity(to_string(i), VotingPID::getnameVotingWithIndex(i), mImg, aJoints[JointType::JointType_Head], pCoordinateMapper);
 						}
@@ -343,7 +345,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						RobotDrive::setDriveunit(RobotVelocity);
 					}
 
-					RobotVelocity = RobotVelocity - intervalVelocity;
+					RobotVelocity = RobotVelocity - IntervalVelocity;
 					if (RobotVelocity <= 0)
 						RobotVelocity = 0;
 				}
@@ -489,8 +491,8 @@ void DrawJoint(cv::Mat& rImg, const Joint& rJ1, ICoordinateMapper* pCMapper)
 
 void robotTracking(string ID, cv::Mat& rImg, const Joint* rJ1, ICoordinateMapper* pCMapper)
 {
-	double thresholdMaxZ = 2.5;
-	double thresholdMinZ = 1.4;
+	double thresholdMaxZ = 2.4;
+	double thresholdMinZ = 1.6;
 	double thresholdMaxX = 0.3;
 	double thresholdMinX = -0.3;
 
@@ -524,7 +526,7 @@ void robotTracking(string ID, cv::Mat& rImg, const Joint* rJ1, ICoordinateMapper
 				RobotDrive::setDriveunit(RobotVelocity);
 			}
 
-			RobotVelocity = RobotVelocity - intervalVelocity;
+			RobotVelocity = RobotVelocity - IntervalVelocity;
 			if (RobotVelocity <= 0)
 				RobotVelocity = 0;
 		}
@@ -532,7 +534,7 @@ void robotTracking(string ID, cv::Mat& rImg, const Joint* rJ1, ICoordinateMapper
 			LastMovingAction = 1;
 			RobotDrive::setDrivetowhere("forward");
 			RobotDrive::setDriveunit(RobotVelocity);
-			RobotVelocity = RobotVelocity + intervalVelocity;
+			RobotVelocity = RobotVelocity + IntervalVelocity;
 			if (RobotVelocity > 300)
 				RobotVelocity = 300;
 		}
@@ -540,18 +542,18 @@ void robotTracking(string ID, cv::Mat& rImg, const Joint* rJ1, ICoordinateMapper
 			LastMovingAction = 2;
 			RobotDrive::setDrivetowhere("backward");
 			RobotDrive::setDriveunit(RobotVelocity);
-			RobotVelocity = RobotVelocity + intervalVelocity;
+			RobotVelocity = RobotVelocity + IntervalVelocity;
 			if (RobotVelocity > 300)
 				RobotVelocity = 300;
 		}
 	}
 	else if (SM_JointPos.Position.X < thresholdMinX) {
 		RobotDrive::setDrivetowhere("spinright");
-		RobotDrive::setDriveunit(70);
+		RobotDrive::setDriveunit(50);
 	}
 	else if (SM_JointPos.Position.X > thresholdMaxX) {
 		RobotDrive::setDrivetowhere("spinleft");
-		RobotDrive::setDriveunit(70);
+		RobotDrive::setDriveunit(50);
 	}
 }
 

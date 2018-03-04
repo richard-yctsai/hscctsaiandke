@@ -11,7 +11,7 @@ using namespace std;
 class VotingPID {
 	protected:
 		// PIDVector for voting
-		static const int votingLength = 1;
+		static const int votingLength = 5;
 		static vector< vector<string> > myPIDVector;
 		static int ID;
 		static string nameVoting[6];
