@@ -15,6 +15,7 @@
 #include <iostream>
 #include <windows.h>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include <string.h>
 #include <sstream>
@@ -33,7 +34,7 @@
 
 using namespace std;
 
-// temporary coordinate
+// Temporary coordinate for recording as file.csv
 float tmpWR_JointPos[3];
 
 string FollowingTarget = "Tsai";
@@ -201,12 +202,12 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-	// file output stream
+	// File output stream
 	ofstream csvfile;
 	string csvfilename = "C:/Users/Public/Data/KINECTData/VSFile_Buffer.csv";
 	csvfile.open(csvfilename);
 
-	// read head coordinate and id
+	// Read id and pairing result
 	ifstream resultfile;
 	string resultfilename = "C:/Users/Public/Data/KINECTData/result.csv";
 	string line;
@@ -320,7 +321,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 							writeInfo(i, csvfile, aJoints, pCoordinateMapper, time_str);
 
-							if (!VotingPID::getnameVotingWithIndex(i).compare(FollowingTarget))
+							//if (!VotingPID::getnameVotingWithIndex(i).compare(FollowingTarget))
 								robotTracking(to_string(i), mImg, aJoints, pCoordinateMapper);
 
 							DrawIdentity(to_string(i), VotingPID::getnameVotingWithIndex(i), mImg, aJoints[JointType::JointType_Head], pCoordinateMapper);
@@ -535,25 +536,37 @@ void robotTracking(string ID, cv::Mat& rImg, const Joint* rJ1, ICoordinateMapper
 			RobotDrive::setDrivetowhere("forward");
 			RobotDrive::setDriveunit(RobotVelocity);
 			RobotVelocity = RobotVelocity + IntervalVelocity;
-			if (RobotVelocity > 300)
-				RobotVelocity = 300;
+			if (RobotVelocity > 500)
+				RobotVelocity = 500;
 		}
 		else if (SM_JointPos.Position.Z < thresholdMinZ) {
 			LastMovingAction = 2;
 			RobotDrive::setDrivetowhere("backward");
 			RobotDrive::setDriveunit(RobotVelocity);
 			RobotVelocity = RobotVelocity + IntervalVelocity;
-			if (RobotVelocity > 300)
-				RobotVelocity = 300;
+			if (RobotVelocity > 500)
+				RobotVelocity = 500;
 		}
 	}
 	else if (SM_JointPos.Position.X < thresholdMinX) {
-		RobotDrive::setDrivetowhere("spinright");
-		RobotDrive::setDriveunit(50);
+		if (SM_JointPos.Position.Z > thresholdMaxZ) {
+			RobotDrive::setDrivetowhere("turnright");
+			RobotDrive::setDriveunit(RobotVelocity);
+		}
+		else {
+			RobotDrive::setDrivetowhere("spinright");
+			RobotDrive::setDriveunit(50);
+		}
 	}
 	else if (SM_JointPos.Position.X > thresholdMaxX) {
-		RobotDrive::setDrivetowhere("spinleft");
-		RobotDrive::setDriveunit(50);
+		if (SM_JointPos.Position.Z > thresholdMaxZ) {
+			RobotDrive::setDrivetowhere("turnleft");
+			RobotDrive::setDriveunit(RobotVelocity);
+		}
+		else {
+			RobotDrive::setDrivetowhere("spinleft");
+			RobotDrive::setDriveunit(50);
+		}
 	}
 }
 

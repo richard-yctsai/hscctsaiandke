@@ -134,7 +134,7 @@ public class DriveRealTime extends JFrame implements KeyListener {
             roombacomm.setSpeed( roombacomm.getSpeed() - 10 );
         }
         else if( keyCode == KeyEvent.VK_PERIOD ) {
-            updateDisplay("speed up");	
+            updateDisplay("speed up");
             roombacomm.setSpeed( roombacomm.getSpeed() + 10 );
         }
         else if( keyCode == KeyEvent.VK_R ) {

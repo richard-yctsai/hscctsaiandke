@@ -87,7 +87,7 @@ public class PID {
 			skeletons_set.add(jointsKinect);
 			
 			int tempFramesOfSkeleton = ReadData.countFileLine(rootDir + "/KINECTData/VSFile_" + i + ".csv");
-			if (tempFramesOfSkeleton > collectSeconds*16*(8.0/10) && framesOfSkeleton > tempFramesOfSkeleton) {
+			if (tempFramesOfSkeleton > collectSeconds*30*(8.0/10) && framesOfSkeleton > tempFramesOfSkeleton) {
 				framesOfSkeleton = tempFramesOfSkeleton;
 			}
 		}
@@ -113,14 +113,14 @@ public class PID {
 		sampleingRateOfItl = framesOfInnertial / collectSeconds;
 		System.out.println("framesOfInnertial: " + framesOfInnertial + ", sampleingRateOfItl: " + sampleingRateOfItl);
 		
-		System.out.println("0-inertial");
-		for( int i = 0; i <inertials_set.get(0).size();i++) {
-			System.out.println(inertials_set.get(0).get(i).getAcc()[0]);
-		}
-		System.out.println("0-skeleton");
-		for( int i = 0; i <skeletons_acc_set.get(0).size();i++) {
-			System.out.println(skeletons_acc_set.get(0).get(i).getAccRight_wrist()[0]);
-		}
+//		System.out.println("0-inertial");
+//		for( int i = 0; i <inertials_set.get(0).size();i++) {
+//			System.out.println(inertials_set.get(0).get(i).getAcc()[0]);
+//		}
+//		System.out.println("0-skeleton");
+//		for( int i = 0; i <skeletons_acc_set.get(0).size();i++) {
+//			System.out.println(skeletons_acc_set.get(0).get(i).getAccRight_wrist()[0]);
+//		}
 //		System.out.println("1-inertial");
 //		for( int i = 0; i <inertials_set.get(1).size();i++) {
 //			System.out.println(inertials_set.get(1).get(i).getAcc()[0]);
@@ -129,7 +129,6 @@ public class PID {
 //		for( int i = 0; i <skeletons_acc_set.get(1).size();i++) {
 //			System.out.println(skeletons_acc_set.get(1).get(i).getAccRight_wrist()[0]);
 //		}
-		
 		
 		//Pair skeleton data with users' IDs every 5 seconds
 		ArrayList<Double> scores = new ArrayList<Double>();

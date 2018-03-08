@@ -92,8 +92,8 @@ public class FileRecieveThread extends Thread {
 			} while (dis.readLine() != null);
 
 			System.out.println(whoSent + " just turn off the sending process.");
-//			boolean txtDelete = new File(FILE_TO_PAIRING).delete();
-//			boolean csvDelete = new File (FILE_TO_PAIRING_CVS).delete();
+			boolean txtDelete = new File(FILE_TO_PAIRING).delete();
+			boolean csvDelete = new File (FILE_TO_PAIRING_CVS).delete();
 			System.out.println(whoSent+".txt file has been deleted");
 			
 			fos.close();

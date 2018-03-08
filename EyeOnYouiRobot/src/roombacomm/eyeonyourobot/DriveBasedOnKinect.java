@@ -132,13 +132,25 @@ public class DriveBasedOnKinect {
         	roombacomm.setSpeed(driveunit);
         	roombacomm.goBackward();
         }
-        else if(drivetowhere.equals("spinleft")) {
+        else if(drivetowhere.equals("spinleft")) 
+        {
         	roombacomm.setSpeed(driveunit);
         	roombacomm.spinLeft();
         }
-        else if(drivetowhere.equals("spinright")){
+        else if(drivetowhere.equals("spinright"))
+        {
         	roombacomm.setSpeed(driveunit);
         	roombacomm.spinRight();
         }
+        else if(drivetowhere.equals("turnleft"))
+        {
+	        roombacomm.setSpeed(driveunit);
+	        roombacomm.turnLeft();
+    	}
+        else if(drivetowhere.equals("turnright"))
+        {
+	        roombacomm.setSpeed(driveunit);
+	        roombacomm.turnRight();
+    	}
     }
 }
