@@ -46,11 +46,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean connectedAvailable = false;
     private String defaultName = "";
     private String defaultIP = "";
-    public String dir_path_arguements = "";
-    public File dir_arguements;
-    public File file_arguements;
+    private String dir_path_arguements = "";
+    private File dir_arguements;
+    private File file_arguements;
 
-    public Handler handler;
+    private Handler handler;
 
     private SensorManager mSensorManager;
     private Sensor mSensor;
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private DataInputStream in_arguments;
 
     private TextView text;
-    private static ToggleButton btn_record;
+    private ToggleButton btn_record;
 
     private boolean startRec = false;
 
@@ -69,6 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
     private float[] gravityValues = null;
     private float[] magneticValues = null;
+
+    private String rawAcc="";
+    private String rawGyro="";
+    private boolean gyroReadFlag= false;
+    private boolean accReadFlag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         ConnectCheck();
         inputName();
 
-        mSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+        mSensorManager = (SensorManager )getSystemService(Context.SENSOR_SERVICE);
         List<Sensor> deviceSensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
 
         // Show all supported sensor
@@ -116,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
         if ((mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY)) != null) {
             mSensorManager.registerListener(mSensorListener, mSensor, 10000);
         } else {
-            Toast.makeText(mContext, "GYROSCOPE is not supported!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "GRAVITY is not supported!", Toast.LENGTH_SHORT).show();
         }
 
         if ((mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)) != null) {
@@ -124,17 +129,35 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(mContext, "MAGNETOMETER is not supported!", Toast.LENGTH_SHORT).show();
         }
+        if((mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE))!=null){
+            mSensorManager.registerListener(mSensorListener, mSensor, 10000);
+        }else{
+            Toast.makeText(mContext, "GYROSCOPE is not supported!", Toast.LENGTH_SHORT).show();
+        }
   /* get time */
 
     }
+
     private SensorEventListener mSensorListener = new SensorEventListener() {
         public final void onSensorChanged(SensorEvent event) {
-            String raw;
+
             String time;
 
             if (startRec) {
+                if((event.sensor.getType() == Sensor.TYPE_GYROSCOPE)){
+                    double[] deviceGyroscope = new double[4];
+                    deviceGyroscope[0] = event.values[0];
+                    deviceGyroscope[1] = event.values[1];
+                    deviceGyroscope[2] = event.values[2];
+                    deviceGyroscope[3] = 0;
+
+                    rawGyro= String.valueOf(deviceGyroscope[0]) + "," + String.valueOf(deviceGyroscope[1]) + "," + String.valueOf(deviceGyroscope[2]);
+                    Log.d("Gyro",rawGyro);
+                    gyroReadFlag=true;
+
+                }
                 if ((gravityValues != null) && (magneticValues != null)
-                        && (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION)) {
+                        && (event.sensor.getType() == Sensor.TYPE_LINEAR_ACCELERATION) ) {
                     try {
 
                         float[] deviceRelativeAcceleration = new float[4];
@@ -143,17 +166,16 @@ public class MainActivity extends AppCompatActivity {
                         deviceRelativeAcceleration[2] = event.values[2];
                         deviceRelativeAcceleration[3] = 0;
 
+//                        Log.d("sensors",event.sensor.getName());
                         // Change the device relative acceleration values to earth relative values
                         // X axis -> East
                         // Y axis -> North Pole
                         // Z axis -> Sky
 
+                        //calibrate to earth coordination
                         float[] R = new float[16], I = new float[16], earthAcc = new float[16];
-
                         SensorManager.getRotationMatrix(R, I, gravityValues, magneticValues);
-
                         float[] inv = new float[16];
-
                         android.opengl.Matrix.invertM(inv, 0, R, 0);
                         android.opengl.Matrix.multiplyMV(earthAcc, 0, inv, 0, deviceRelativeAcceleration, 0);
                         //Log.d("Acceleration", "Values: (" + earthAcc[0] + ", " + earthAcc[1] + ", " + earthAcc[2] + ")");
@@ -162,10 +184,9 @@ public class MainActivity extends AppCompatActivity {
                         SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
                         Date curDate = new Date(System.currentTimeMillis()); // 獲取當前時間
                         time = formatter.format(curDate);
-                        raw = String.valueOf(earthAcc[0]) + "," + String.valueOf(earthAcc[1]) + "," + String.valueOf(earthAcc[2]) + ","
-                                + time + "\n";
 
-                        client.sendDataString(raw);
+                        rawAcc = String.valueOf(earthAcc[0]) + "," + String.valueOf(earthAcc[1]) + "," + String.valueOf(earthAcc[2]) + ",";
+                        accReadFlag=true;
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -175,6 +196,19 @@ public class MainActivity extends AppCompatActivity {
                 } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
                     magneticValues = event.values;
                 }
+                if(accReadFlag && gyroReadFlag){
+                    SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
+                    Date curDate = new Date(System.currentTimeMillis()); // 獲取當前時間
+                    time = formatter.format(curDate);
+
+                    String raw = rawAcc +rawGyro +"," +time +"\n";
+                    client.sendDataString(raw);
+                    Log.d("raw",raw+" ");
+                    Log.d("acc",rawAcc+" ");
+                    Log.d("gyro",rawGyro+" ");
+                    gyroReadFlag= false;
+                    accReadFlag =false;
+                }
             }
         }
 
@@ -183,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
             // Do something here if sensor accuracy changes.
         }
     };
-    protected void ConnectCheck(){
+    private void ConnectCheck(){
         //建立一個POP OUT視窗要求使用者輸入IP Address
         final AlertDialog.Builder builder = new AlertDialog.Builder(this,R.style.AlertDialogCustom);
         builder.setCancelable(false);
@@ -211,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
                             //建立與client端地連線
                             connectClient();
                             //check if connected
-                            if (connectedAvailable == false) //returns true if internet available
+                            if (!connectedAvailable ) //returns true if internet available
                             {
                                 Toast.makeText(MainActivity.this, "唉呦  好像沒有連上喔", Toast.LENGTH_LONG).show();
                                 ConnectCheck();
@@ -225,11 +259,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onShow(DialogInterface dialog) {
                     }
                 });
-                builder.show().getWindow().setLayout(800, 600);
+
+                    builder.show().getWindow().setLayout(800, 600);
             }
         });
     }
-    public void inputName(){
+    private void inputName(){
         //建立一個POP OUT視窗要求使用者輸入User name
         final AlertDialog.Builder builder = new AlertDialog.Builder(this,R.style.AlertDialogCustom);
         builder.setCancelable(false);
@@ -274,11 +309,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void setClient(ClientSocket client) {
+    private void setClient(ClientSocket client) {
         this.client = client;
     }
 
-    public ClientSocket getClient() {
+    private ClientSocket getClient() {
         return client;
     }
 
