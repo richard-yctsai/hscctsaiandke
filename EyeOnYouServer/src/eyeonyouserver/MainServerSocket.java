@@ -14,6 +14,7 @@ import pairing.PID;
 public class MainServerSocket {
 	private int port;
 	private ServerSocket servsock;
+	private boolean isConnected = false;
 	
 	public static SocketClientWithSensing clientRunPID = null;
     static String ipaddress = "localhost";
@@ -27,7 +28,7 @@ public class MainServerSocket {
 	public MainServerSocket(int port) throws IOException {
 		this.port = port;
 		this.servsock = new ServerSocket(port);
-		
+		isConnected=true;
 		System.out.println("EyeOnYouServer starts!");
 	}
 
@@ -67,5 +68,8 @@ public class MainServerSocket {
 	
 	public void close() throws IOException{
 		this.servsock.close();
+	}
+	public boolean isConnected() {
+		return this.isConnected;
 	}
 }

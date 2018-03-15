@@ -22,7 +22,7 @@ public class MainActivity {
 			InetAddress ip= InetAddress.getLocalHost();
 			System.out.println("Current IP Address : " + ip.getHostAddress());
 			
-			if(true){
+			if(servsock.isConnected()){
 				servsock.run();
 			}
 		} finally{

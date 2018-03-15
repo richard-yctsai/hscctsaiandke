@@ -97,14 +97,14 @@ xcopy /D /F /Y "$(ProjectDir)\glut32.dll" "$(OutDir)"
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(OPENNI2_INCLUDE64);$(NITE2_INCLUDE64);.</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(OPENNI2_INCLUDE64);$(NITE2_INCLUDE64);.;C:\opencv\build\include\opencv2;C:\opencv\build\include\opencv;C:\opencv\build\include</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OutDir);$(NITE2_LIB64);$(OPENNI2_LIB64);..\..\..\Libs</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glut64.lib;NiTE2.lib;OpenNI2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);$(NITE2_LIB64);$(OPENNI2_LIB64);..\..\..\Libs;$(OPENCV_DIR)\lib;C:\opencv\build\x64\vc14\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glut64.lib;NiTE2.lib;OpenNI2.lib;opencv_world320d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /D /S /F /Y "$(OPENNI2_REDIST64)\*" "$(OutDir)"

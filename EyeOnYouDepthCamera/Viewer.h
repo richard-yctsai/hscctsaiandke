@@ -29,16 +29,31 @@
 #include "ServerSocket.h"
 #include "ServerSocketRunPID.h"
 
+// OpenCV Header
+#include <opencv2/core.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+
+#include "OpenNI.h"
 #include "NiTE.h"
 
 #define MAX_DEPTH 10000
 
 using namespace std;
+using namespace openni;
+
+enum DisplayModes
+{
+	DISPLAY_MODE_OVERLAY,
+	DISPLAY_MODE_DEPTH,
+	DISPLAY_MODE_IMAGE
+};
 
 class SampleViewer
 {
 public:
-	SampleViewer(const char* strSampleName);
+	//SampleViewer(const char* strSampleName);
+	SampleViewer(const char* strSampleName, openni::Device& device, openni::VideoStream& depth, openni::VideoStream& color);
 	virtual ~SampleViewer();
 
 	virtual openni::Status Init(int argc, char **argv);
@@ -55,6 +70,15 @@ protected:
 
 	void Finalize();
 
+	// richardyctsai
+	openni::VideoFrameRef		m_depthFrame;
+	openni::VideoFrameRef		m_colorFrame;
+
+	//openni::Device&			m_device;
+	openni::VideoStream&			m_depthStream;
+	openni::VideoStream&			m_colorStream;
+	openni::VideoStream**		m_streams;
+	
 private:
 	SampleViewer(const SampleViewer&);
 	SampleViewer& operator=(SampleViewer&);
@@ -65,12 +89,16 @@ private:
 	static void glutKeyboard(unsigned char key, int x, int y);
 
 	float				m_pDepthHist[MAX_DEPTH];
-	char			m_strSampleName[ONI_MAX_STR];
-	openni::RGB888Pixel*		m_pTexMap;
+	char				m_strSampleName[ONI_MAX_STR];
+
 	unsigned int		m_nTexMapX;
 	unsigned int		m_nTexMapY;
+	DisplayModes		m_eViewState;
+	openni::RGB888Pixel*	m_pTexMap;
+	int			m_width;
+	int			m_height;
 
-	openni::Device		m_device;
+	openni::Device&		m_device;
 	nite::UserTracker* m_pUserTracker;
 
 	nite::UserId m_poseUser;
