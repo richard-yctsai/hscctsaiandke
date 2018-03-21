@@ -38,13 +38,13 @@ c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.c
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
 c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.cpp(313): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
-c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.cpp(388): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.cpp(387): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
-c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.cpp(401): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.cpp(400): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
-c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.cpp(562): warning C4101: 'y': unreferenced local variable
-c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.cpp(562): warning C4101: 'x': unreferenced local variable
-c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.cpp(903): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.cpp(561): warning C4101: 'y': unreferenced local variable
+c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.cpp(561): warning C4101: 'x': unreferenced local variable
+c:\users\richard yi-chia tsai\desktop\hscctsaiandke\eyeonyoudepthcamera\viewer.cpp(902): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1769): note: see declaration of 'sprintf'
   UserViewer.vcxproj -> C:\Users\Richard Yi-Chia TSAI\Desktop\hscctsaiandke\EyeOnYouDepthCamera\x64\Debug\EyeOnYouSensing.exe
   UserViewer.vcxproj -> C:\Users\Richard Yi-Chia TSAI\Desktop\hscctsaiandke\EyeOnYouDepthCamera\x64\Debug\EyeOnYouSensing.pdb (Full PDB)

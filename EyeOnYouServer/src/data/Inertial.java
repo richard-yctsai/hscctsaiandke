@@ -7,36 +7,22 @@ package data;
 */
 public class Inertial {
 	
-	private double[] acc; //Input 3-axis values into double array
-	private double[] gyro;
+	private double[] right_wrist;
 	
 	public Inertial() {
 		
 	}
 	
-	public Inertial(double acc_x, double acc_y, double acc_z) {
-		this.setAcc(new double[] {acc_x, acc_y, acc_z});
-	}
-	
-	public Inertial(double acc_x, double acc_y, double acc_z, double gyro_x, double gyro_y, double gyro_z) {
-		this.setAcc(new double[] {acc_x, acc_y, acc_z});
-		this.setGyro(new double[] {gyro_x, gyro_y, gyro_z});
+	public Inertial(double x1, double y1, double z1, double x2, double y2, double z2) {
+		setRight_wrist(new double[] {x1, y1, z1, x2, y2, z2});
 	}
 
-	public double[] getAcc() {
-		return acc;
+	public double[] getRight_wrist() {
+		return right_wrist;
 	}
 
-	public void setAcc(double[] acc) {
-		this.acc = acc;
-	}
-
-	public double[] getGyro() {
-		return gyro;
-	}
-
-	public void setGyro(double[] gyro) {
-		this.gyro = gyro;
+	public void setRight_wrist(double[] right_wrist) {
+		this.right_wrist = right_wrist;
 	}
 
 }

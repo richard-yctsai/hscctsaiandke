@@ -30,8 +30,8 @@ public class BodyExtraction {
 			cr = new CSVReader(new FileReader(file));
 			String[] line;
 			while ((line = cr.readNext()) != null) {
-				if(ids.isEmpty() || !ids.contains(Integer.valueOf(line[3]))) {		// ID is in the 18th column
-					ids.add(Integer.valueOf(line[3]));
+				if(ids.isEmpty() || !ids.contains(Integer.valueOf(line[6]))) {		// ID is in the 18th column
+					ids.add(Integer.valueOf(line[6]));
 				}
 			}
 			cr.close();
@@ -60,7 +60,7 @@ public class BodyExtraction {
 			String[] line;
 			
 			while((line = cr.readNext()) != null) {
-				if (Integer.valueOf(line[3]) == id) {			// ID is in the 18th column
+				if (Integer.valueOf(line[6]) == id) {			// ID is in the 18th column
 					cw.writeNext(line);
 				}
         	}

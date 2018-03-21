@@ -36,7 +36,7 @@ public class ReadData {
 			cr = new CSVReader(new FileReader(file));
 			String[] line;
 			while ((line = cr.readNext()) != null) {
-				Skeleton aJointPos = new Skeleton(Double.valueOf(line[0]), Double.valueOf(line[1]), Double.valueOf(line[2]));
+				Skeleton aJointPos = new Skeleton(Double.valueOf(line[0]), Double.valueOf(line[1]), Double.valueOf(line[2]), Double.valueOf(line[3]), Double.valueOf(line[4]), Double.valueOf(line[5]));
 				jointpos.add(aJointPos);
 			}
 			cr.close();
@@ -65,7 +65,7 @@ public class ReadData {
 			cr = new CSVReader(new FileReader(file));
 			String[] line;
 			while ((line = cr.readNext()) != null) {
-				Skeleton aJointPos = new Skeleton(Double.valueOf(line[0]), Double.valueOf(line[1]), Double.valueOf(line[2]));
+				Skeleton aJointPos = new Skeleton(Double.valueOf(line[0]), Double.valueOf(line[1]), Double.valueOf(line[2]), Double.valueOf(line[3]), Double.valueOf(line[4]), Double.valueOf(line[5]));
 				jointpos.add(aJointPos);
 			}
 			for (int i = 0; i < jointpos.size(); i++) {
@@ -106,6 +106,7 @@ public class ReadData {
 		
 		ArrayList<Inertial> imu_6 = new ArrayList<Inertial>();
 		double[] acc = new double[3];
+		double[] gyro = new double[3];
 		
 		CSVReader cr = null;
 		try {
@@ -124,8 +125,20 @@ public class ReadData {
 					acc[2] = Double.valueOf(line[2]);
 				else
 					acc[2] = 0;
+				if(Math.abs(Double.valueOf(line[3])) > thresholdInertialAcc)
+					gyro[0] = Double.valueOf(line[3]);
+				else
+					gyro[0] = 0;
+				if(Math.abs(Double.valueOf(line[4])) > thresholdInertialAcc)
+					gyro[1] = Double.valueOf(line[4]);
+				else
+					gyro[1] = 0;
+				if(Math.abs(Double.valueOf(line[5])) > thresholdInertialAcc)
+					gyro[2] = Double.valueOf(line[5]);
+				else
+					gyro[2] = 0;
 				
-				Inertial sixaxis = new Inertial(acc[0], acc[1], acc[2]);
+				Inertial sixaxis = new Inertial(acc[0], acc[1], acc[2], gyro[0], gyro[1], gyro[2]);
 				imu_6.add(sixaxis);
 			}
 			cr.close();

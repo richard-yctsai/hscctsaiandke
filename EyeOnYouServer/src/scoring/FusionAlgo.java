@@ -6,10 +6,15 @@ import java.util.Arrays;
 
 import data.Turn;
 import data.TurnList;
-import data.Inertial;
 import data.MTurn;
 import data.STurn;
+
+import data.Inertial;
+import data.InertialAcc;
+import data.InertialGyro;
+import data.Skeleton;
 import data.SkeletonAcc;
+import data.SkeletonGyro;
 
 /**
  * This class is used to calculate similarity score with a certain fusion
@@ -91,7 +96,7 @@ public class FusionAlgo {
 	 * 
 	 * @return: similarity score
 	 */
-	public static double calResult_alg3(ArrayList<SkeletonAcc> fromSkelton, ArrayList<Inertial> fromIMU) {
+	public static double calResult_alg4(ArrayList<SkeletonAcc> fromSkelton, ArrayList<InertialAcc> fromIMU) {
 		double[][] KinectAccSeq = getSkeletonAccSeq(fromSkelton);
 		double[][] IMUAccSeq = getIMUAccSeq(fromIMU);
 		double scoringResult = 0;
@@ -100,7 +105,18 @@ public class FusionAlgo {
 		scoringResult = dtw.similarity(KinectAccSeq[1], IMUAccSeq[2]) + dtw.similarity(KinectAccSeq[2], IMUAccSeq[3]) + dtw.similarity(KinectAccSeq[3], IMUAccSeq[1]);
 		scoringResult = scoringResult/3;
 		return scoringResult;
-        
+	}
+	
+//	public static double calResult_alg3(ArrayList<SkeletonAcc> fromSkelton, ArrayList<Inertial> fromIMU) {
+//		double[][] KinectAccSeq = getSkeletonAccSeq(fromSkelton);
+//		double[][] IMUAccSeq = getIMUAccSeq(fromIMU);
+//		double scoringResult = 0;
+//		
+//		DTWSimilarity dtw = new DTWSimilarity();
+//		scoringResult = dtw.similarity(KinectAccSeq[1], IMUAccSeq[2]) + dtw.similarity(KinectAccSeq[2], IMUAccSeq[3]) + dtw.similarity(KinectAccSeq[3], IMUAccSeq[1]);
+//		scoringResult = scoringResult/3;
+//		return scoringResult;
+//        
 //		double[][] xcorr = new double[3][];
 //		int lag = 40;
 //
@@ -146,8 +162,8 @@ public class FusionAlgo {
 //		 */
 //
 //		return max;
-
-	}
+//
+//	}
 
 	/**
 	 * Generate queue of "Stop" turns from skeleton data and inertial data. The list
@@ -427,12 +443,12 @@ public class FusionAlgo {
 		return AccSeq;
 	}
 
-	private static double[][] getIMUAccSeq(ArrayList<Inertial> fromIMU) {
+	private static double[][] getIMUAccSeq(ArrayList<InertialAcc> fromIMU) {
 		double[][] AccSeq = new double[4][fromIMU.size()];
 		double[] Acc = new double[3];
 		
 		for(int i=0; i < fromIMU.size(); i++) {
-			Acc = fromIMU.get(i).getAcc();
+			Acc = fromIMU.get(i).getAccRight_wrist();
 			AccSeq[0][i] = (Acc[0]+Acc[1]+Acc[2]) / 3.0;
 			AccSeq[1][i] = Acc[0];
 			AccSeq[2][i] = Acc[1];

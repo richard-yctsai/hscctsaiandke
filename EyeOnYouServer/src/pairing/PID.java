@@ -11,11 +11,15 @@ import com.opencsv.CSVWriter;
 
 import data.HeadPos;
 import data.Inertial;
+import data.InertialAcc;
+import data.InertialGyro;
 import data.Skeleton;
 import data.SkeletonAcc;
+import data.SkeletonGyro;
 import data.TurnList;
 import preprocess.BodyExtraction;
 import preprocess.Filter;
+import preprocess.InertialInfo;
 import preprocess.ProcessTool;
 import preprocess.ReadData;
 import preprocess.SkeletonInfo;
@@ -38,7 +42,9 @@ public class PID {
 	public static int sampleingRateOfItl = 0;
 
 	final static double thresholdSkeletonAcc = 2;
+	final static double thresholdSkeletonGyro = 2;
 	final static double thresholdInertialAcc = 5;
+	final static double thresholdInertialGyro = 5;
 //	final static double durationPerSeg = 0.2; // 0.2secs/segment
 //	final static int frameSizePerSeg = (int)(sampleingRateOfSkn* durationPerSeg); // 18frames * 0.2secs = 3frames/segment
 	
@@ -81,7 +87,10 @@ public class PID {
 		// Read skeleton data and inertial data of each person
 		ArrayList<ArrayList<Skeleton>> skeletons_set = new ArrayList<ArrayList<Skeleton>>();
 		ArrayList<ArrayList<SkeletonAcc>> skeletons_acc_set = new ArrayList<ArrayList<SkeletonAcc>>();
+		ArrayList<ArrayList<SkeletonGyro>> skeletons_gyro_set = new ArrayList<ArrayList<SkeletonGyro>>();
 		ArrayList<ArrayList<Inertial>> inertials_set = new ArrayList<ArrayList<Inertial>>();
+		ArrayList<ArrayList<InertialAcc>> inertials_acc_set = new ArrayList<ArrayList<InertialAcc>>();
+		ArrayList<ArrayList<InertialGyro>> inertials_gyro_set = new ArrayList<ArrayList<InertialGyro>>();
 		for (int i = 0; i < S_skeletonsID.size(); i++) {
 			ArrayList<Skeleton> jointsKinect = ReadData.readKinect(rootDir + "/KINECTData/VSFile_" + i + ".csv");
 			skeletons_set.add(jointsKinect);
@@ -93,13 +102,17 @@ public class PID {
 		}
 		sampleingRateOfSkn = framesOfSkeleton / collectSeconds;
 		System.out.println("framesOfSkeleton: " + framesOfSkeleton + ", sampleingRateOfSkn: " + sampleingRateOfSkn);
-		
 		// Calculate Skeleton Acceleration based on Read Skeleton Position
 		for (int i = 0; i < S_skeletonsID.size(); i++) {
 			ArrayList<SkeletonAcc> skeletons_acc= new ArrayList<SkeletonAcc>();;
 			SkeletonInfo.setAccelerateion(skeletons_set.get(i), skeletons_acc, sampleingRateOfSkn, thresholdSkeletonAcc);
 			skeletons_acc_set.add(skeletons_acc);
+			
+			ArrayList<SkeletonGyro> skeletons_gyro= new ArrayList<SkeletonGyro>();;
+			SkeletonInfo.setGyroscope(skeletons_set.get(i), skeletons_gyro, sampleingRateOfSkn, thresholdSkeletonGyro);
+			skeletons_gyro_set.add(skeletons_gyro);
 		}
+		
 		
 		for (int i = 0; i < I_usersName.size(); i++) {
 			ArrayList<Inertial> jointsIMU = ReadData.readIMU(rootDir + "/IMUData/" + I_usersName.get(i) + ".csv", thresholdInertialAcc);
@@ -112,6 +125,15 @@ public class PID {
 		}
 		sampleingRateOfItl = framesOfInnertial / collectSeconds;
 		System.out.println("framesOfInnertial: " + framesOfInnertial + ", sampleingRateOfItl: " + sampleingRateOfItl);
+		for (int i = 0; i < I_usersName.size(); i++) {
+			ArrayList<InertialAcc> inertial_acc= new ArrayList<InertialAcc>();
+			InertialInfo.setAcceleration(inertials_set.get(i), inertial_acc, thresholdInertialAcc);
+			inertials_acc_set.add(inertial_acc);
+
+			ArrayList<InertialGyro> inertial_gyro= new ArrayList<InertialGyro>();
+			InertialInfo.setGyroscope(inertials_set.get(i), inertial_gyro, thresholdInertialGyro);
+			inertials_gyro_set.add(inertial_gyro);
+		}
 		
 //		System.out.println("0-inertial");
 //		for( int i = 0; i <inertials_set.get(0).size();i++) {
@@ -134,11 +156,10 @@ public class PID {
 		ArrayList<Double> scores = new ArrayList<Double>();
         System.out.println("*************************");
 		for (int i = 0; i < skeletons_acc_set.size(); i++) {
-			for (int j = 0; j < inertials_set.size(); j++) {
-				
-				
+			for (int j = 0; j < inertials_acc_set.size(); j++) {
+
 				double score = 0;
-				score = FusionAlgo.calResult_alg3(skeletons_acc_set.get(i), inertials_set.get(j));
+				score = FusionAlgo.calResult_alg4(skeletons_acc_set.get(i), inertials_acc_set.get(j));
 				scores.add(score);
 				System.out.println("Scores: (i=" + i + ", j=" + j + ") -> " + score);
 			}

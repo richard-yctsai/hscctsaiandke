@@ -66,7 +66,7 @@ int LastMovingAction = 0; // 0: stop, 1: forward, 2: backward
 int RobotVelocity = 0;
 const int IntervalVelocity = 4;
 
-void DrawUserColor(nite::UserTracker* pUserTracker, const nite::UserData& userData, int r, int g, int b);
+void DrawUserColor(nite::UserTracker* pUserTracker, const nite::UserData& userData, float r, float g, float b);
 
 void SampleViewer::glutIdle()
 {
@@ -206,18 +206,18 @@ void updateUserColor(openni::VideoFrameRef arg_m_colorFrame, nite::UserTracker* 
 
 
 	const openni::RGB888Pixel* pImageRow = (const openni::RGB888Pixel*)arg_m_colorFrame.getData();
-	int idx = arg_m_colorFrame.getWidth() * PantsPosY + PantsPosX;
-	if (idx < 0)
-		idx = 0;
-	//std::cout << "( "
-	//	<< (int)pImageRow[idx].r << ","
-	//	<< (int)pImageRow[idx].g << ","
-	//	<< (int)pImageRow[idx].b << ")"
+	int idx = ( (arg_m_colorFrame.getWidth() * (int)clothPosY+1) + (int)clothPosX);
+	//if (idx < 0)
+	//	idx = 0;
+	//std::cout << "("
+	//	<< pImageRow[idx].r << ","
+	//	<< pImageRow[idx].g << ","
+	//	<< pImageRow[idx].b << ")"
 	//	<< std::endl;
 
-	cout << "idx:                      " << idx << endl;
+	int idx2 = arg_m_colorFrame.getWidth() * (arg_m_colorFrame.getHeight() + 1) / 2;
 
-	DrawUserColor(pUserTracker, userData, (int)pImageRow[idx].r, (int)pImageRow[idx].g, (int)pImageRow[idx].b);
+	DrawUserColor(pUserTracker, userData, pImageRow[idx].r, pImageRow[idx].g, pImageRow[idx].b);
 
 	char str[80];
 	sprintf(str, "%d", userData.getId());
@@ -359,17 +359,16 @@ void DrawIdentity(nite::UserTracker* pUserTracker, const nite::UserData& userDat
 	//cout << "X: " << jointHead.getOrientation().x << "         Y:" << jointHead.getOrientation().y << "         Z:" << jointHead.getOrientation().z << endl;
 
 }
-void DrawUserColor(nite::UserTracker* pUserTracker, const nite::UserData& userData, int r, int g, int b)
+void DrawUserColor(nite::UserTracker* pUserTracker, const nite::UserData& userData, float r, float g, float b)
 {
 	/*int color = userData.getId() % colorCount;
 	glColor3f(1.0f - Colors[color][0], 1.0f - Colors[color][1], 1.0f - Colors[color][2]);*/
-	glColor3f(r, g, b);
+	glColor3f(1.0f - r, 1.0f - g, 1.0f - b);
 
-	std::cout << "( "
-		<< r << ","
-		<< g << ","
-		<< b << ")"
-		<< std::endl;
+	//std::cout << "( "
+	//	<< 1.0f - r << ","
+	//	<< 1.0f - g << ","
+	//	<< std::endl;
 
 	const nite::SkeletonJoint& jointHead = userData.getSkeleton().getJoint(nite::JOINT_HEAD);
 
@@ -579,6 +578,7 @@ void WriteSkeletonInfo(int ID, ofstream& csvout, const nite::UserData& userData,
 	const nite::SkeletonJoint& WH_JointPos = userData.getSkeleton().getJoint(nite::JOINT_RIGHT_HAND);
 
 	csvout << WH_JointPos.getPosition().x / 1000.0 << "," << WH_JointPos.getPosition().y / 1000.0 << "," << WH_JointPos.getPosition().z / 1000.0 << ","
+		<< WH_JointPos.getOrientation().x / 1000.0 << "," << WH_JointPos.getOrientation().y / 1000.0 << "," << WH_JointPos.getOrientation().z / 1000.0 << ","
 		<< ID << "," << time_str << "\n";
 }
 
@@ -851,6 +851,7 @@ void SampleViewer::Display()
 		
 		updateUserState(user, userTrackerFrame.getTimestamp());
 		updateIdentity(VotingPID::getnameVotingWithIndex(user.getId()).c_str(), user, userTrackerFrame.getTimestamp());
+		updateUserColor(m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());
 
 		if (user.isNew())
 		{
@@ -863,8 +864,6 @@ void SampleViewer::Display()
 			{
 				DrawStatusLabel(m_pUserTracker, user);
 				DrawIdentity(m_pUserTracker, user);
-
-				updateUserColor(m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());
 				//DrawUserColor(m_pUserTracker, user);
 			}
 			if (g_drawCenterOfMass)
