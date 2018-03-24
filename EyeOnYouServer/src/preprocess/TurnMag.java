@@ -260,16 +260,16 @@ public class  TurnMag {
 	* @param: a list of MTurn objects
 	* @param: a list of inertia objects
 	*/
-	private static void addAcceleration_imu(ArrayList<MTurn> Turns, ArrayList<Inertial> imu_6, int sampleingRateOfItl, int dataSizePerSeg, double durationPerSeg) {
-		ArrayList<Inertial> imu_move;
-		for (int i = 0; i < Turns.size(); i++) {
-			int head = new BigDecimal(Turns.get(i).getStartTime() / durationPerSeg).setScale(1, BigDecimal.ROUND_HALF_DOWN).intValue();
-			int tail = new BigDecimal(Turns.get(i).getEndTime() / durationPerSeg).setScale(1, BigDecimal.ROUND_HALF_DOWN).intValue();
-			imu_move = new ArrayList<Inertial>(imu_6.subList(head * dataSizePerSeg, tail * dataSizePerSeg));
-			calAcceleration(Turns.get(i), imu_move);
-		}
-		
-	}
+//	private static void addAcceleration_imu(ArrayList<MTurn> Turns, ArrayList<Inertial> imu_6, int sampleingRateOfItl, int dataSizePerSeg, double durationPerSeg) {
+//		ArrayList<Inertial> imu_move;
+//		for (int i = 0; i < Turns.size(); i++) {
+//			int head = new BigDecimal(Turns.get(i).getStartTime() / durationPerSeg).setScale(1, BigDecimal.ROUND_HALF_DOWN).intValue();
+//			int tail = new BigDecimal(Turns.get(i).getEndTime() / durationPerSeg).setScale(1, BigDecimal.ROUND_HALF_DOWN).intValue();
+//			imu_move = new ArrayList<Inertial>(imu_6.subList(head * dataSizePerSeg, tail * dataSizePerSeg));
+//			calAcceleration(Turns.get(i), imu_move);
+//		}
+//		
+//	}
 	
 	/**
 	* downsample acceleration values in each "Move" turn which processed from inertial data
@@ -277,34 +277,34 @@ public class  TurnMag {
 	* @param: a MTurn object
 	* @param: a list of inertia objects
 	*/
-	private static void calAcceleration(MTurn MoveTurn, ArrayList<Inertial> imu_move) {
-		double tmpAcc = 0, tmpAccX = 0, tmpAccY = 0, tmpAccZ = 0;
-		int cnt = 0;
-		
-		for (Inertial imu:imu_move) {
-			tmpAcc += Math.pow(Math.pow(imu.getAcc()[0], 2) + Math.pow(imu.getAcc()[1], 2) + Math.pow(imu.getAcc()[2], 2), 0.5);
-			tmpAccX += imu.getAcc()[0];
-			tmpAccY += imu.getAcc()[1];
-			tmpAccZ += imu.getAcc()[2];
-			cnt++;
-			if (cnt == 5) {
-				MoveTurn.addAcc(tmpAcc/5);
-				MoveTurn.addAcc_x(tmpAccX/5);
-				MoveTurn.addAcc_y(tmpAccY/5);
-				MoveTurn.addAcc_z(tmpAccZ/5);
-				tmpAcc = 0;
-				tmpAccX = 0;
-				tmpAccY = 0;
-				tmpAccZ = 0;
-				cnt = 0;
-			}
-		}
-		if (cnt != 0) {
-			MoveTurn.addAcc(tmpAcc/cnt);
-			MoveTurn.addAcc_x(tmpAccX/cnt);
-			MoveTurn.addAcc_y(tmpAccY/cnt);
-			MoveTurn.addAcc_z(tmpAccZ/cnt);
-		}
-	}
+//	private static void calAcceleration(MTurn MoveTurn, ArrayList<Inertial> imu_move) {
+//		double tmpAcc = 0, tmpAccX = 0, tmpAccY = 0, tmpAccZ = 0;
+//		int cnt = 0;
+//		
+//		for (Inertial imu:imu_move) {
+//			tmpAcc += Math.pow(Math.pow(imu.getAcc()[0], 2) + Math.pow(imu.getAcc()[1], 2) + Math.pow(imu.getAcc()[2], 2), 0.5);
+//			tmpAccX += imu.getAcc()[0];
+//			tmpAccY += imu.getAcc()[1];
+//			tmpAccZ += imu.getAcc()[2];
+//			cnt++;
+//			if (cnt == 5) {
+//				MoveTurn.addAcc(tmpAcc/5);
+//				MoveTurn.addAcc_x(tmpAccX/5);
+//				MoveTurn.addAcc_y(tmpAccY/5);
+//				MoveTurn.addAcc_z(tmpAccZ/5);
+//				tmpAcc = 0;
+//				tmpAccX = 0;
+//				tmpAccY = 0;
+//				tmpAccZ = 0;
+//				cnt = 0;
+//			}
+//		}
+//		if (cnt != 0) {
+//			MoveTurn.addAcc(tmpAcc/cnt);
+//			MoveTurn.addAcc_x(tmpAccX/cnt);
+//			MoveTurn.addAcc_y(tmpAccY/cnt);
+//			MoveTurn.addAcc_z(tmpAccZ/cnt);
+//		}
+//	}
 
 }

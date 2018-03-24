@@ -180,6 +180,7 @@ xcopy /D /F /Y "$(ProjectDir)\glut64.dll" "$(OutDir)"
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ColorMemory.cpp" />
     <ClCompile Include="CThread.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PIDRun.cpp" />
@@ -193,6 +194,7 @@ xcopy /D /F /Y "$(ProjectDir)\glut64.dll" "$(OutDir)"
     <ClCompile Include="VotingPID.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ColorMemory.h" />
     <ClInclude Include="CThread.h" />
     <ClInclude Include="NiteSampleUtilities.h" />
     <ClInclude Include="PIDRun.h" />
