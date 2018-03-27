@@ -12,7 +12,7 @@ DWORD SocketListener::m_ThreadFunc() {
 	while ( listening ) {
         int iResult = recv(ClientSocket, recvbuf, recvbuflen, 0);
         if (iResult > 0) {
-            printf("Bytes received: %d\n", iResult);
+            // printf("Bytes received: %d\n", iResult);
 			recvbuf[iResult-1] = 0; // null terminate the string according to the length
 			
 			// The message spec indicates the XML will end in a "new line"
@@ -24,7 +24,7 @@ DWORD SocketListener::m_ThreadFunc() {
 			HandleMessage(recvbuf);
         }
 		else {
-            printf("Client connection closing\n");
+            // printf("Client connection closing\n");
             closesocket(ClientSocket);
             return 1;
         }
@@ -72,33 +72,33 @@ void SocketListener::HandleMessage(char* xml) {
 	*/
 
 	if ( strstri(xml, "GetHostname") != 0 ) {
-		printf("Client sent Hostname request message\n");
+		// printf("Client sent Hostname request message\n");
 		if ( sender != NULL )
 			sender->sendHostnameResponse();
 	}
 
 	if ( strstri(xml, "GetMemory") != 0 ) {
-		printf("Client sent GetMemory request message\n");
+		// printf("Client sent GetMemory request message\n");
 		if ( sender != NULL )
 			sender->sendMemoryResponse();
 	}
 
 	if ( strstri( xml, "GetRandomNumber" ) != NULL ) {
-		printf("Client sent GetRandomNumber request message\n");
+		// printf("Client sent GetRandomNumber request message\n");
 		if ( sender != NULL )
 			sender->sendRandomNumberResponse();
 	}
 
 	if (strstri(xml, "GetKinectKeepSkeleton") != NULL) {
 		PIDRun::setKeepSkeleton(true);
-		printf("Client sent GetKinectKeepSkeleton request message\n");
+		// printf("Client sent GetKinectKeepSkeleton request message\n");
 		if (sender != NULL)
 			sender->sendKinectKeepSkeletonResponse();
 	}
 
 	if (strstri(xml, "GetKinectTagProfile") != NULL) {
 		PIDRun::setTagProfile(true);
-		printf("Client sent GetKinectTagProfile request message\n");
+		// printf("Client sent GetKinectTagProfile request message\n");
 		//if (sender != NULL)
 		//	sender->sendKinectTagProfileResponse();
 	}

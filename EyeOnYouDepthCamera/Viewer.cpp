@@ -27,7 +27,7 @@ using namespace std;
 #define GL_WIN_SIZE_Y	1024
 #define TEXTURE_SIZE	512
 
-#define DEFAULT_DISPLAY_MODE	DISPLAY_MODE_OVERLAY
+#define DEFAULT_DISPLAY_MODE	DISPLAY_MODE_DEPTH
 
 #define MIN_NUM_CHUNKS(data_size, chunk_size)	((((data_size)-1) / (chunk_size) + 1))
 #define MIN_CHUNKS_SIZE(data_size, chunk_size)	(MIN_NUM_CHUNKS(data_size, chunk_size) * (chunk_size))
@@ -37,7 +37,7 @@ SampleViewer* SampleViewer::ms_self = NULL;
 bool g_drawSkeleton = true;
 bool g_drawCenterOfMass = false;
 bool g_drawStatusLabel = true;
-bool g_drawBoundingBox = false;
+bool g_drawBoundingBox = true;
 bool g_drawBackground = true;
 bool g_drawDepth = true;
 bool g_drawFrameId = true;
@@ -65,6 +65,10 @@ string FollowingTarget = "Tsai";
 int LastMovingAction = 0; // 0: stop, 1: forward, 2: backward
 int RobotVelocity = 0;
 const int IntervalVelocity = 4;
+
+double lastRoll = 0;
+double lastPitch = 0;
+double lastYaw = 0;
 
 void SampleViewer::glutIdle()
 {
@@ -187,24 +191,21 @@ char g_userNameLabels[MAX_USERS][100] = {{0}};
 char g_userNameLabelsByHist[MAX_USERS][100] = {{0}};
 bool g_userNameConfidence[MAX_USERS] = {false};
 char g_userColorNameLabels[MAX_USERS][100] = {{0}};
-int g_userColorHistogramLabels[MAX_USERS][1000] = {0};
+int g_userColorHistogramLabels[MAX_USERS][125] = {0};
 
 char g_generalMessage[100] = { 0 };
 
 #define USER_COLOR(msg) {\
-	sprintf(g_userColorNameLabels[userData.getId()], "%s", msg);\
-	printf("[%08" PRIu64 "] User #%d:\t%s\n", ts, userData.getId(), msg);}
+	sprintf(g_userColorNameLabels[userData.getId()], "%s", msg);} // printf("[%08" PRIu64 "] User #%d:\t%s\n", ts, userData.getId(), msg);
 
 #define USER_CONFIDENCE(msg) {\
 	g_userNameConfidence[userData.getId()] = msg;}
 
 #define USER_NAME(msg) {\
-	sprintf(g_userNameLabels[userData.getId()], "%s", msg);\
-	printf("[%08" PRIu64 "] User #%d:\t%s\n", ts, userData.getId(), msg);}
+	sprintf(g_userNameLabels[userData.getId()], "%s", msg);} // printf("[%08" PRIu64 "] User #%d:\t%s\n", ts, userData.getId(), msg);
 
 #define USER_NAME_HIST(msg) {\
-	sprintf(g_userNameLabelsByHist[userData.getId()], "%s", msg);\
-	printf("[%08" PRIu64 "] User #%d:\t%s\n", ts, userData.getId(), msg);}
+	sprintf(g_userNameLabelsByHist[userData.getId()], "%s", msg);} // printf("[%08" PRIu64 "] User #%d:\t%s\n", ts, userData.getId(), msg);
 
 void updateIdentity(const char *NAME, const bool CONFIDENCE, openni::VideoFrameRef arg_m_colorFrame, nite::UserTracker* pUserTracker, const nite::UserData& userData, uint64_t ts)
 {
@@ -216,41 +217,48 @@ void updateIdentity(const char *NAME, const bool CONFIDENCE, openni::VideoFrameR
 	USER_NAME(str);
 	USER_CONFIDENCE(CONFIDENCE);
 
-	if (g_userNameConfidence[userData.getId()] == true) {
-		USER_NAME_HIST(str);
+	//if (g_userNameConfidence[userData.getId()] == true) {
+	//	USER_NAME_HIST(str);
 
-		// richardyctsai
-		float clothPosX, clothPosY;
-		pUserTracker->convertJointCoordinatesToDepth(userData.getCenterOfMass().x, userData.getCenterOfMass().y, userData.getCenterOfMass().z, &clothPosX, &clothPosY);
+	//	// richardyctsai
+	//	float clothPosX, clothPosY;
+	//	pUserTracker->convertJointCoordinatesToDepth(userData.getCenterOfMass().x, userData.getCenterOfMass().y, userData.getCenterOfMass().z, &clothPosX, &clothPosY);
 
-		const openni::RGB888Pixel* pImageRow = (const openni::RGB888Pixel*)arg_m_colorFrame.getData();
-		int idx = ((arg_m_colorFrame.getWidth() * (int)clothPosY + 1) + (int)clothPosX);
-		if (idx < 0)
-			idx = 0;
+	//	const openni::RGB888Pixel* pImageRow = (const openni::RGB888Pixel*)arg_m_colorFrame.getData();
+	//	int idx = ((arg_m_colorFrame.getWidth() * (int)clothPosY + 1) + (int)clothPosX);
+	//	if (idx < 0)
+	//		idx = 0;
 
-		int squareLen = 30;
-		int idxHist = idx - (arg_m_colorFrame.getWidth() * (squareLen / 2)) - (squareLen / 2);
-		for (int i = 0; i < squareLen; i++)
-		{
-			idxHist += (arg_m_colorFrame.getWidth() * i);
-			for (int j = 0; j < squareLen; j++) {
-				int tempidxHist = idxHist + j;
-				int rHist = pImageRow[tempidxHist].r / 50;
-				int gHist = pImageRow[tempidxHist].g / 50;
-				int bHist = pImageRow[tempidxHist].b / 50;
-				if (rHist == 5)
-					rHist = 4;
-				if (gHist == 5)
-					gHist = 4;
-				if (bHist == 5)
-					bHist = 4;
+	//	for (int i = 0; i < 125; i++)
+	//		g_userColorHistogramLabels[userData.getId()][i] = 0;
+	//	int squareLen = 30;
+	//	int colorInterval = 50;
+	//	int idxHist = idx - (arg_m_colorFrame.getWidth() * (squareLen / 2)) - (squareLen / 2);
+	//	for (int i = 0; i < squareLen; i++)
+	//	{
+	//		idxHist += (arg_m_colorFrame.getWidth() * i);
+	//		for (int j = 0; j < squareLen; j++) {
+	//			long tempidxHist = idxHist + j;
+	//			int rHist = pImageRow[tempidxHist].r / colorInterval;
+	//			int gHist = pImageRow[tempidxHist].g / colorInterval;
+	//			int bHist = pImageRow[tempidxHist].b / colorInterval;
+	//			if (rHist == 5)
+	//				rHist = 4;
+	//			if (gHist == 5)
+	//				gHist = 4;
+	//			if (bHist == 5)
+	//				bHist = 4;
 
-				int indexHist = rHist * 25 + gHist * 5 + bHist;
+	//			int indexHist = rHist * 25 + gHist * 5 + bHist;
 
-				g_userColorHistogramLabels[userData.getId()][indexHist] += 1;
-			}
-		}
-	}
+	//			g_userColorHistogramLabels[userData.getId()][indexHist] += 1;
+	//		}
+	//	}
+	//}
+
+	//for (int i = 0; i < 125; i++)
+	//	cout << g_userColorHistogramLabels[userData.getId()][i] << " ";
+	//cout << endl;
 }
 
 #define USER_MESSAGE(msg) {\
@@ -354,23 +362,18 @@ void DrawIdentityByHist(openni::VideoFrameRef arg_m_colorFrame, nite::UserTracke
 
 	int temp_userColorHistogramLabels[1000] = { 0 };
 	int squareLen = 30;
+	int colorInterval = 100;
 	int idxHist = idx - (arg_m_colorFrame.getWidth() * (squareLen / 2)) - (squareLen / 2);
 	for (int i = 0; i < squareLen; i++)
 	{
 		idxHist += (arg_m_colorFrame.getWidth() * i);
 		for (int j = 0; j < squareLen; j++) {
 			int tempidxHist = idxHist + j;
-			int rHist = pImageRow[tempidxHist].r / 50;
-			int gHist = pImageRow[tempidxHist].g / 50;
-			int bHist = pImageRow[tempidxHist].b / 50;
-			if (rHist == 5)
-				rHist = 4;
-			if (gHist == 5)
-				gHist = 4;
-			if (bHist == 5)
-				bHist = 4;
+			int rHist = pImageRow[tempidxHist].r / colorInterval;
+			int gHist = pImageRow[tempidxHist].g / colorInterval;
+			int bHist = pImageRow[tempidxHist].b / colorInterval;
 
-			int indexHist = rHist * 25 + gHist * 5 + bHist;
+			int indexHist = rHist * 9 + gHist * 3 + bHist;
 
 			temp_userColorHistogramLabels[indexHist] += 1;
 		}
@@ -385,12 +388,17 @@ void DrawIdentityByHist(openni::VideoFrameRef arg_m_colorFrame, nite::UserTracke
 	pUserTracker->convertJointCoordinatesToDepth(jointHead.getPosition().x, jointHead.getPosition().y, jointHead.getPosition().z, &x, &y);
 	x *= GL_WIN_SIZE_X / (float)g_nXRes;
 	y *= GL_WIN_SIZE_Y / (float)g_nYRes;
-	char *msg = "";
+	char *msg;
 
 	if (ColorMemory::identifyPersonByHist(temp_userColorHistogramLabels, g_userColorHistogramLabels[userData.getId()]) == true)
 		msg = g_userNameLabelsByHist[userData.getId()];
 	else
-		msg = "Unknown";
+	{
+		char str[80];
+		sprintf(str, "%d", userData.getId());
+		strcat(str, ": Unknown");
+		msg = str;
+	}
 
 	glRasterPos2i(x - ((strlen(msg) / 2) * 8), y - 120);
 	glPrintString(GLUT_BITMAP_TIMES_ROMAN_24, msg);
@@ -423,10 +431,6 @@ void DrawUserColor(openni::VideoFrameRef arg_m_colorFrame, nite::UserTracker* pU
 	strcat(str, "Your Cloth's Color is ");
 	strcat(str, ColorMemory::ColorClassification().c_str());
 	USER_COLOR(str);
-
-	//for (int i = 0; i < 900; i++)
-	//	cout << g_userColorHistogramLabels[userData.getId()][i] << " ";
-	//cout << endl;
 
 	//cout << "rgb = ("
 	//	<< r << ","
@@ -613,7 +617,7 @@ void GetResultOfPID()
 		ofstream fout(csvfilenamepairing);
 		string line;
 		while (getline(fin, line)) fout << line << '\n';
-		cout << "buffer complete!!!!!!!!!!!!!" << endl;
+		//cout << "buffer complete!!!!!!!!!!!!!" << endl;
 
 		PIDRun::setKeepSkeleton(false);
 		PIDRun::setExecutePID(true);
@@ -645,13 +649,51 @@ void GetResultOfPID()
 		PIDRun::setTagProfile(false);
 	}
 }
+void toEulerAngle(float w, float x, float y, float z, double& roll, double& pitch, double& yaw)
+{
+	// roll (x-axis rotation)
+	double sinr = +2.0 * (w * x + y * z);
+	double cosr = +1.0 - 2.0 * (x * x + y * y);
+	roll = atan2(sinr, cosr);
+
+	// pitch (y-axis rotation)
+	double sinp = +2.0 * (w * y - z * x);
+	if (fabs(sinp) >= 1)
+		pitch = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+	else
+		pitch = asin(sinp);
+
+	// yaw (z-axis rotation)
+	double siny = +2.0 * (w * z + x * y);
+	double cosy = +1.0 - 2.0 * (y * y + z * z);
+	yaw = atan2(siny, cosy);
+}
+
 void WriteSkeletonInfo(int ID, ofstream& csvout, const nite::UserData& userData, char* time_str)
 {
 	const nite::SkeletonJoint& WH_JointPos = userData.getSkeleton().getJoint(nite::JOINT_RIGHT_HAND);
 
+	const nite::SkeletonJoint& rJoint = userData.getSkeleton().getJoint(nite::JOINT_TORSO);
+	const nite::Quaternion& tr = rJoint.getOrientation();
+	double roll = 0;
+	double pitch = 0;
+	double yaw = 0;
+	toEulerAngle(tr.w, tr.x, tr.y, tr.z, roll, pitch, yaw);
+	if (roll < 0.02)
+		roll = 0;
+	if (pitch < 0.02)
+		pitch = 0;
+	if (yaw < 0.02)
+		yaw = 0;
+
+	//cout << roll << "  " << pitch  << "   " << yaw  << endl;
 	csvout << WH_JointPos.getPosition().x / 1000.0 << "," << WH_JointPos.getPosition().y / 1000.0 << "," << WH_JointPos.getPosition().z / 1000.0 << ","
-		<< WH_JointPos.getOrientation().x << "," << WH_JointPos.getOrientation().y << "," << WH_JointPos.getOrientation().z << ","
+		<< roll << "," << pitch << "," << yaw << ","
 		<< ID << "," << time_str << "\n";
+
+	lastRoll = roll;
+	lastPitch = pitch;
+	lastYaw = yaw;
 }
 
 void DrawLimb(nite::UserTracker* pUserTracker, const nite::SkeletonJoint& joint1, const nite::SkeletonJoint& joint2, int color)
@@ -923,6 +965,11 @@ void SampleViewer::Display()
 		
 		updateUserState(user, userTrackerFrame.getTimestamp());
 
+		if (g_runRobotTracking)
+		{
+			RunRobotTracking(m_pUserTracker, user);
+		}
+
 		if (user.isNew())
 		{
 			m_pUserTracker->startSkeletonTracking(user.getId());
@@ -933,10 +980,9 @@ void SampleViewer::Display()
 			if (g_drawStatusLabel)
 			{
 				DrawStatusLabel(m_pUserTracker, user);
+				//DrawUserColor(m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());
 
-				updateIdentity(VotingPID::getnameVotingWithIndex(user.getId()).c_str(), true, m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());
-				DrawUserColor(m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());
-
+				updateIdentity(VotingPID::getnameVotingWithIndex(user.getId()).c_str(), true, m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());				
 				if(g_userNameConfidence[user.getId()] == true)
 					DrawIdentity(m_pUserTracker, user);
 				else
@@ -960,11 +1006,6 @@ void SampleViewer::Display()
 				memset(time_str, '\0', 13);
 				sprintf_s(time_str, 13, "%02d:%02d:%02d:%03d", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
 				WriteSkeletonInfo(user.getId(), csvfile, user, time_str);
-			}
-
-			if (g_runRobotTracking)
-			{
-				RunRobotTracking(m_pUserTracker, user);
 			}
 		}
 
@@ -1057,7 +1098,7 @@ void SampleViewer::OnKey(unsigned char key, int /*x*/, int /*y*/)
 		g_drawFrameId = !g_drawFrameId;
 		break;
 	case 'r':
-		// Draw frame ID
+		// Run Robot Tracking
 		g_runRobotTracking = !g_runRobotTracking;
 		break;
 	case '1':

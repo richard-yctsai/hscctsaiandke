@@ -437,11 +437,11 @@ public abstract class RoombaComm
     /**
      *
      */
-    public void turnLeft() {
-        turn(500);
+    public void turnLeft( int radius ) {
+        turn(radius);
     }
-    public void turnRight() {
-        turn(-500);
+    public void turnRight( int radius ) {
+        turn(-radius);
     }
     public void turn( int radius ) {
         drive( speed, radius );

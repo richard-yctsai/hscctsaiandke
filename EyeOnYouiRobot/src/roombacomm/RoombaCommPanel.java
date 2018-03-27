@@ -194,10 +194,10 @@ public class RoombaCommPanel extends JPanel implements ActionListener,ChangeList
             roombacomm.spinRight();
         }
         else if( "turnleft".equals(action) ) {
-            roombacomm.turnLeft();
+            roombacomm.turnLeft(500);
         }
         else if( "turnright".equals(action) ) {
-            roombacomm.turnRight();
+            roombacomm.turnRight(500);
         }
         else if( "test".equals(action) ) {
             updateDisplay("Playing some notes\n");

@@ -56,7 +56,7 @@ void SocketSender::sendKinectKeepSkeletonResponse() {
 		sprintf_s(buffer, "runPID\n");
 		sendXMLToClient(buffer);
 		PIDRun::setExecutePID(false);
-		cout << "Successfully complete sending runPID command to EyeOnYouServer!" << endl;
+		// cout << "Successfully complete sending runPID command to EyeOnYouServer!" << endl;
 	}
 }
 
@@ -67,7 +67,7 @@ void SocketSender::sendKinectTagProfileResponse() {
 	if (PIDRun::getTagProfile() == false) {
 		sprintf_s(buffer, "finishedTagging\n");
 		sendXMLToClient(buffer);
-		cout << "Successfully complete sending tagProfile result to EyeOnYouServer!" << endl;
+		// cout << "Successfully complete sending tagProfile result to EyeOnYouServer!" << endl;
 	}
 }
 
@@ -75,13 +75,13 @@ void SocketSender::sendXMLToClient(char xml[]) {
 	// Send some XML to the client
 	int len = strlen(xml);
     int sent = send( clientSocket, xml, len, 0 );
-	cout << "*run PID* has been sent!!!" << endl;
+	// cout << "*run PID* has been sent!!!" << endl;
 
     if ( sent == SOCKET_ERROR ) {
-        printf( "send failed\n");
+        // printf( "send failed\n");
         closesocket( clientSocket );
         return;
     }
 
-	printf( "%i bytes sent to client\n", sent);
+	// printf( "%i bytes sent to client\n", sent);
 }
