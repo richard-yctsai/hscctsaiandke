@@ -40,7 +40,9 @@ public class PID {
 	public static int collectSeconds = 5;
 	public static int sampleingRateOfSkn = 0;
 	public static int sampleingRateOfItl = 0;
-
+	public static int confidenceOfSimilarity = -1;
+	public static double thresholdSD = 0.001;
+	
 	final static double thresholdSkeletonAcc = 2;
 	final static double thresholdSkeletonGyro = 2;
 	final static double thresholdInertialAcc = 5;
@@ -163,6 +165,7 @@ public class PID {
 				scores.add(score);
 				System.out.println("Scores: (i=" + i + ", j=" + j + ") -> " + score);
 			}
+			
 		}
 		System.out.println("*************************");
 		
@@ -171,7 +174,7 @@ public class PID {
 		 * Assign 1 when the high score with strongest confidence happened.
 		 * Assign 0; otherwise.
 		 */
-		int[][] resultMatrix = IDPairing.pairing(scores, S_skeletonsID.size(), I_usersName.size());
+		int[][] resultMatrix = IDPairing.pairing_ul(scores, S_skeletonsID.size(), I_usersName.size());
 		
 		// Write pairing results of each frame every 1 seconds
 		int[] match = new int[S_skeletonsID.size()];
@@ -186,17 +189,22 @@ public class PID {
 			}
 		}
 		
+			
 		try {
-			String[] IDCoordinate = new String[S_skeletonsID.size() * 2];
+			String[] IDCoordinate = new String[S_skeletonsID.size() * 2 + 1];
 			CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);  // CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv", true), ',', CSVWriter.NO_QUOTE_CHARACTER);
+			if (confidenceOfSimilarity == 1)
+				IDCoordinate[0] = "1";
+			else if (confidenceOfSimilarity == 0)
+				IDCoordinate[0] = "0";
 //				for (int k = t * framesOfSkeletonSegment; k < (t+1) * framesOfSkeletonSegment; k++) {
 				for (int i = 0; i < S_skeletonsID.size(); i++) {
 					if (match[i] >= 0) {
-						IDCoordinate[i*2] = String.valueOf(S_skeletonsID.get(i));
-						IDCoordinate[i*2 + 1] = I_usersName.get(match[i]);
+						IDCoordinate[i*2 + 1] = String.valueOf(S_skeletonsID.get(i));
+						IDCoordinate[i*2 + 2] = I_usersName.get(match[i]);
 					} else {
-						IDCoordinate[i*2] = String.valueOf(S_skeletonsID.get(i));
-						IDCoordinate[i*2 + 1] = "Unknown";
+						IDCoordinate[i*2 + 1] = String.valueOf(S_skeletonsID.get(i));
+						IDCoordinate[i*2 + 2] = "Unknown";
 					}
 				}
 				cw.writeNext(IDCoordinate);

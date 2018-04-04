@@ -87,12 +87,11 @@ string ColorMemory::ColorClassification()
 	return "Reds";
 }
 
-bool ColorMemory::identifyPersonByHist(int* Hist1, int* Hist2)
+bool ColorMemory::identifyPersonByHist(int* Hist1, int* Hist2, int threshold)
 {
 	int difference = 0;
-	int threshold = 50;
 
-	for (int i = 0; i < 900; i++) {
+	for (int i = 0; i < 125; i++) {
 		difference = difference + abs(Hist1[i] - Hist2[i]);
 	}
 

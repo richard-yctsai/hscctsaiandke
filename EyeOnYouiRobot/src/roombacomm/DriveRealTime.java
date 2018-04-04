@@ -126,16 +126,16 @@ public class DriveRealTime extends JFrame implements KeyListener {
         }
         else if( keyCode == KeyEvent.VK_RIGHT ) {
             updateDisplay("spinright");
-            updateDisplay(String.valueOf( roombacomm.getSpeed() ));
+              updateDisplay(String.valueOf( roombacomm.getSpeed() ));
             roombacomm.spinRight();
         }
         else if( keyCode == KeyEvent.VK_1 ) {
             updateDisplay("turnleft");
-	        roombacomm.turnLeft(100);
+	        roombacomm.turnLeft(900);
         }
         else if( keyCode == KeyEvent.VK_3 ) {
             updateDisplay("turnright");
-            roombacomm.turnRight(100);
+            roombacomm.turnRight(900);
         }
         else if( keyCode == KeyEvent.VK_COMMA ) {
             updateDisplay("speed down");

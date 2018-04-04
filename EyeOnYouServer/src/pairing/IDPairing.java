@@ -174,11 +174,33 @@ public class IDPairing {
 		int nS = scoreM.length;
 		int nI = scoreM[0].length;
 		double[] SD = new double[nS];
+		double averageSD = 0.0;
+		
 		ArrayList<SIPair> inferedIDs = new ArrayList<SIPair>();
 		
 		for (int i = 0; i < nS; i++) {
 			SD[i] = calSD(scoreM[i]);
+			averageSD += SD[i];
 		}
+		
+//        double[][] tmpScoreColumn = new double[nI][nS];
+//        for (int i = 0; i < nS; i++)
+//            for (int j = 0; j < nI; j++)
+//            	tmpScoreColumn[j][i] = scoreM[i][j];
+//        
+//		for (int i = 0; i < nI; i++) 
+//			averageSD += calSD(tmpScoreColumn[i]);
+		
+		if (nS == 1 && nI == 1)
+			averageSD = scoreM[0][0];
+		else
+			averageSD = averageSD / nS;
+		
+		System.out.println("averageSD: " + averageSD);
+		if (averageSD > PID.thresholdSD)
+			PID.confidenceOfSimilarity = 1;
+		else if (averageSD <= PID.thresholdSD)
+			PID.confidenceOfSimilarity = 0;
 		
 		for (int i = 0; i < nS; i++) {
 			for (int j = 0; j < nI; j++) {

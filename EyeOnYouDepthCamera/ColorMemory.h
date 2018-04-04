@@ -18,7 +18,7 @@ public:
 	static void setRGB(int r, int g, int b); 
 	static float* RGBToHSL();
 	static string ColorClassification();
-	static bool identifyPersonByHist(int* Hist1, int* Hist2);
+	static bool identifyPersonByHist(int* Hist1, int* Hist2, int threshold);
 };
 
 #endif

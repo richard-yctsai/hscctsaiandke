@@ -60,11 +60,15 @@ string csvfilename = "C:/Users/Public/Data/KINECTData/VSFile_Buffer.csv";
 ifstream resultfile;
 string resultfilename = "C:/Users/Public/Data/KINECTData/result.csv";
 string line;
+int confidenceOfResult = -1;
 
-string FollowingTarget = "Tsai";
+char s_FollowingTarget[30] = "hans";
+int i_FollowingTarget = -1;
 int LastMovingAction = 0; // 0: stop, 1: forward, 2: backward
 int RobotVelocity = 0;
-const int IntervalVelocity = 4;
+bool b_StopRobotTracking = true; 
+const int IntervalVelocity = 3;
+const int IntervalVelocityMinus = 8;
 
 double lastRoll = 0;
 double lastPitch = 0;
@@ -217,44 +221,52 @@ void updateIdentity(const char *NAME, const bool CONFIDENCE, openni::VideoFrameR
 	USER_NAME(str);
 	USER_CONFIDENCE(CONFIDENCE);
 
-	//if (g_userNameConfidence[userData.getId()] == true) {
-	//	USER_NAME_HIST(str);
+	// richardyctsai
+	if (g_userNameConfidence[userData.getId()] == true) {
+		if (strcmp(NAME, s_FollowingTarget) == 0) {
+			i_FollowingTarget = userData.getId();
+		}
 
-	//	// richardyctsai
-	//	float clothPosX, clothPosY;
-	//	pUserTracker->convertJointCoordinatesToDepth(userData.getCenterOfMass().x, userData.getCenterOfMass().y, userData.getCenterOfMass().z, &clothPosX, &clothPosY);
+		strcat(str, " <-ByHist");
+		USER_NAME_HIST(str);
+		
+		/*float clothPosX, clothPosY;
+		pUserTracker->convertJointCoordinatesToDepth(userData.getCenterOfMass().x, userData.getCenterOfMass().y, userData.getCenterOfMass().z, &clothPosX, &clothPosY);
 
-	//	const openni::RGB888Pixel* pImageRow = (const openni::RGB888Pixel*)arg_m_colorFrame.getData();
-	//	int idx = ((arg_m_colorFrame.getWidth() * (int)clothPosY + 1) + (int)clothPosX);
-	//	if (idx < 0)
-	//		idx = 0;
 
-	//	for (int i = 0; i < 125; i++)
-	//		g_userColorHistogramLabels[userData.getId()][i] = 0;
-	//	int squareLen = 30;
-	//	int colorInterval = 50;
-	//	int idxHist = idx - (arg_m_colorFrame.getWidth() * (squareLen / 2)) - (squareLen / 2);
-	//	for (int i = 0; i < squareLen; i++)
-	//	{
-	//		idxHist += (arg_m_colorFrame.getWidth() * i);
-	//		for (int j = 0; j < squareLen; j++) {
-	//			long tempidxHist = idxHist + j;
-	//			int rHist = pImageRow[tempidxHist].r / colorInterval;
-	//			int gHist = pImageRow[tempidxHist].g / colorInterval;
-	//			int bHist = pImageRow[tempidxHist].b / colorInterval;
-	//			if (rHist == 5)
-	//				rHist = 4;
-	//			if (gHist == 5)
-	//				gHist = 4;
-	//			if (bHist == 5)
-	//				bHist = 4;
+		if (arg_m_colorFrame.isValid()) {
+			const openni::RGB888Pixel* pImageRow = (const openni::RGB888Pixel*)arg_m_colorFrame.getData();
+			int idx = ((arg_m_colorFrame.getWidth() * (int)clothPosY + 1) + (int)clothPosX);
+			if (idx < 0)
+				idx = 0;
 
-	//			int indexHist = rHist * 25 + gHist * 5 + bHist;
+			for (int i = 0; i < 125; i++)
+				g_userColorHistogramLabels[userData.getId()][i] = 0;
+			int squareLen = 30;
+			int colorInterval = 50;
+			int idxHist = idx - (arg_m_colorFrame.getWidth() * (squareLen / 2)) - (squareLen / 2);
+			for (int i = 0; i < squareLen; i++)
+			{
+				idxHist += (arg_m_colorFrame.getWidth() * i);
+				for (int j = 0; j < squareLen; j++) {
+					long tempidxHist = idxHist + j;
+					int rHist = pImageRow[tempidxHist].r / colorInterval;
+					int gHist = pImageRow[tempidxHist].g / colorInterval;
+					int bHist = pImageRow[tempidxHist].b / colorInterval;
+					if (rHist == 5)
+						rHist = 4;
+					if (gHist == 5)
+						gHist = 4;
+					if (bHist == 5)
+						bHist = 4;
 
-	//			g_userColorHistogramLabels[userData.getId()][indexHist] += 1;
-	//		}
-	//	}
-	//}
+					int indexHist = rHist * 25 + gHist * 5 + bHist;
+
+					g_userColorHistogramLabels[userData.getId()][indexHist] += 1;
+				}
+			}
+		}*/
+	}
 
 	//for (int i = 0; i < 125; i++)
 	//	cout << g_userColorHistogramLabels[userData.getId()][i] << " ";
@@ -339,45 +351,79 @@ void DrawIdentity(nite::UserTracker* pUserTracker, const nite::UserData& userDat
 	const nite::SkeletonJoint& jointHead = userData.getSkeleton().getJoint(nite::JOINT_HEAD);
 	
 	float x, y;
-	pUserTracker->convertJointCoordinatesToDepth(jointHead.getPosition().x, jointHead.getPosition().y, jointHead.getPosition().z, &x, &y);
+	pUserTracker->convertJointCoordinatesToDepth(userData.getCenterOfMass().x, userData.getCenterOfMass().y, userData.getCenterOfMass().z, &x, &y);
 	x *= GL_WIN_SIZE_X / (float)g_nXRes;
 	y *= GL_WIN_SIZE_Y / (float)g_nYRes;
 	char *msg = g_userNameLabels[userData.getId()];
-	glRasterPos2i(x-((strlen(msg)/2)*8),y-120);
+	glRasterPos2i(x - ((strlen(msg) / 2) * 8), y-80);
 	glPrintString(GLUT_BITMAP_TIMES_ROMAN_24, msg);
+
+	//float x, y;
+	//pUserTracker->convertJointCoordinatesToDepth(jointHead.getPosition().x, jointHead.getPosition().y, jointHead.getPosition().z, &x, &y);
+	//x *= GL_WIN_SIZE_X / (float)g_nXRes;
+	//y *= GL_WIN_SIZE_Y / (float)g_nYRes;
+	//char *msg = g_userNameLabels[userData.getId()];
+	//glRasterPos2i(x-((strlen(msg)/2)*8),y-80);
+	//glPrintString(GLUT_BITMAP_TIMES_ROMAN_24, msg);
 
 	//cout << "X: " << jointHead.getOrientation().x << "         Y:" << jointHead.getOrientation().y << "         Z:" << jointHead.getOrientation().z << endl;
 
 }
 void DrawIdentityByHist(openni::VideoFrameRef arg_m_colorFrame, nite::UserTracker* pUserTracker, const nite::UserData& userData)
 {
-	// richardyctsai
-	float clothPosX, clothPosY;
-	pUserTracker->convertJointCoordinatesToDepth(userData.getCenterOfMass().x, userData.getCenterOfMass().y, userData.getCenterOfMass().z, &clothPosX, &clothPosY);
+	//// richardyctsai
+	//float clothPosX, clothPosY;
+	//pUserTracker->convertJointCoordinatesToDepth(userData.getCenterOfMass().x, userData.getCenterOfMass().y, userData.getCenterOfMass().z, &clothPosX, &clothPosY);
 
-	const openni::RGB888Pixel* pImageRow = (const openni::RGB888Pixel*)arg_m_colorFrame.getData();
-	int idx = ((arg_m_colorFrame.getWidth() * (int)clothPosY + 1) + (int)clothPosX);
-	if (idx < 0)
-		idx = 0;
+	//int temp_userColorHistogramLabels[128] = { 0 };
+	//if (arg_m_colorFrame.isValid()) {
+	//	const openni::RGB888Pixel* pImageRow = (const openni::RGB888Pixel*)arg_m_colorFrame.getData();
+	//	int idx = ((arg_m_colorFrame.getWidth() * (int)clothPosY + 1) + (int)clothPosX);
+	//	if (idx < 0)
+	//		idx = 0;
 
-	int temp_userColorHistogramLabels[1000] = { 0 };
-	int squareLen = 30;
-	int colorInterval = 100;
-	int idxHist = idx - (arg_m_colorFrame.getWidth() * (squareLen / 2)) - (squareLen / 2);
-	for (int i = 0; i < squareLen; i++)
-	{
-		idxHist += (arg_m_colorFrame.getWidth() * i);
-		for (int j = 0; j < squareLen; j++) {
-			int tempidxHist = idxHist + j;
-			int rHist = pImageRow[tempidxHist].r / colorInterval;
-			int gHist = pImageRow[tempidxHist].g / colorInterval;
-			int bHist = pImageRow[tempidxHist].b / colorInterval;
+	//	int squareLen = 30;
+	//	int colorInterval = 100;
+	//	int idxHist = idx - (arg_m_colorFrame.getWidth() * (squareLen / 2)) - (squareLen / 2);
+	//	for (int i = 0; i < squareLen; i++)
+	//	{
+	//		idxHist += (arg_m_colorFrame.getWidth() * i);
+	//		for (int j = 0; j < squareLen; j++) {
+	//			int tempidxHist = idxHist + j;
+	//			int rHist = pImageRow[tempidxHist].r / colorInterval;
+	//			int gHist = pImageRow[tempidxHist].g / colorInterval;
+	//			int bHist = pImageRow[tempidxHist].b / colorInterval;
 
-			int indexHist = rHist * 9 + gHist * 3 + bHist;
+	//			int indexHist = rHist * 9 + gHist * 3 + bHist;
 
-			temp_userColorHistogramLabels[indexHist] += 1;
-		}
-	}
+	//			temp_userColorHistogramLabels[indexHist] += 1;
+	//		}
+	//	}
+	//}
+
+	//int color = userData.getId() % colorCount;
+	//glColor3f(1.0f - Colors[color][0], 1.0f - Colors[color][1], 1.0f - Colors[color][2]);
+
+	//const nite::SkeletonJoint& jointHead = userData.getSkeleton().getJoint(nite::JOINT_HEAD);
+
+	//float x, y;
+	//pUserTracker->convertJointCoordinatesToDepth(jointHead.getPosition().x, jointHead.getPosition().y, jointHead.getPosition().z, &x, &y);
+	//x *= GL_WIN_SIZE_X / (float)g_nXRes;
+	//y *= GL_WIN_SIZE_Y / (float)g_nYRes;
+	//char *msg;
+
+	//if (ColorMemory::identifyPersonByHist(temp_userColorHistogramLabels, g_userColorHistogramLabels[userData.getId()], 50) == true)
+	//	msg = g_userNameLabelsByHist[userData.getId()];
+	//else
+	//{
+	//	char str[80];
+	//	sprintf(str, "%d", userData.getId());
+	//	strcat(str, ": Unknown <-ByHist");
+	//	msg = str;
+	//}
+
+	//glRasterPos2i(x - ((strlen(msg) / 2) * 8), y - 80);
+	//glPrintString(GLUT_BITMAP_TIMES_ROMAN_24, msg);
 
 	int color = userData.getId() % colorCount;
 	glColor3f(1.0f - Colors[color][0], 1.0f - Colors[color][1], 1.0f - Colors[color][2]);
@@ -385,23 +431,20 @@ void DrawIdentityByHist(openni::VideoFrameRef arg_m_colorFrame, nite::UserTracke
 	const nite::SkeletonJoint& jointHead = userData.getSkeleton().getJoint(nite::JOINT_HEAD);
 
 	float x, y;
-	pUserTracker->convertJointCoordinatesToDepth(jointHead.getPosition().x, jointHead.getPosition().y, jointHead.getPosition().z, &x, &y);
+	pUserTracker->convertJointCoordinatesToDepth(userData.getCenterOfMass().x, userData.getCenterOfMass().y, userData.getCenterOfMass().z, &x, &y);
 	x *= GL_WIN_SIZE_X / (float)g_nXRes;
 	y *= GL_WIN_SIZE_Y / (float)g_nYRes;
-	char *msg;
-
-	if (ColorMemory::identifyPersonByHist(temp_userColorHistogramLabels, g_userColorHistogramLabels[userData.getId()]) == true)
-		msg = g_userNameLabelsByHist[userData.getId()];
-	else
-	{
-		char str[80];
-		sprintf(str, "%d", userData.getId());
-		strcat(str, ": Unknown");
-		msg = str;
-	}
-
-	glRasterPos2i(x - ((strlen(msg) / 2) * 8), y - 120);
+	char *msg = g_userNameLabelsByHist[userData.getId()];
+	glRasterPos2i(x - ((strlen(msg) / 2) * 8), y - 80);
 	glPrintString(GLUT_BITMAP_TIMES_ROMAN_24, msg);
+
+	//float x, y;
+	//pUserTracker->convertJointCoordinatesToDepth(jointHead.getPosition().x, jointHead.getPosition().y, jointHead.getPosition().z, &x, &y);
+	//x *= GL_WIN_SIZE_X / (float)g_nXRes;
+	//y *= GL_WIN_SIZE_Y / (float)g_nYRes;
+	//char *msg = g_userNameLabelsByHist[userData.getId()];
+	//glRasterPos2i(x - ((strlen(msg) / 2) * 8), y - 80);
+	//glPrintString(GLUT_BITMAP_TIMES_ROMAN_24, msg);
 }
 void DrawUserColor(openni::VideoFrameRef arg_m_colorFrame, nite::UserTracker* pUserTracker, const nite::UserData& userData, uint64_t ts)
 {
@@ -519,90 +562,136 @@ void DrawBoundingBox(const nite::UserData& user)
 	glDrawArrays(GL_LINE_LOOP, 0, 4);
 
 }
-void RunRobotTracking(nite::UserTracker* pUserTracker, const nite::UserData& user)
-{
-	double thresholdMaxZ = 2000.0;
-	double thresholdMinZ = 1000.0;
-	double thresholdMaxX = 300.0;
-	double thresholdMinX = -300.0;
-
-	glColor3f(1.0f, 1.0f, 1.0f);
-
-	float coordinates[3] = { 0 };
-	coordinates[0] = user.getCenterOfMass().x;
-	coordinates[1] = user.getCenterOfMass().y;
-	coordinates[2] = user.getCenterOfMass().z;
-	
-	if (coordinates[0] <= thresholdMaxX && coordinates[0] >= thresholdMinX) {
-		RobotDrive::setDrivetowhere("stop");
-		RobotDrive::setDriveunit(0);
-
-		if (coordinates[2] <= thresholdMaxZ && coordinates[2] >= thresholdMinZ) {
-			if (LastMovingAction == 1) {
-				RobotDrive::setDrivetowhere("forward");
-				RobotDrive::setDriveunit(RobotVelocity);
-			}
-			else if (LastMovingAction == 2) {
-				RobotDrive::setDrivetowhere("backward");
-				RobotDrive::setDriveunit(RobotVelocity);
-			}
-
-			RobotVelocity = RobotVelocity - IntervalVelocity;
-			if (RobotVelocity <= 0)
-				RobotVelocity = 0;
-		}
-		else if (coordinates[2] > thresholdMaxZ) {
-			LastMovingAction = 1;
-			RobotDrive::setDrivetowhere("forward");
-			RobotDrive::setDriveunit(RobotVelocity);
-			RobotVelocity = RobotVelocity + IntervalVelocity;
-			if (RobotVelocity > 500)
-				RobotVelocity = 500;
-		}
-		else if (coordinates[2] < thresholdMinZ) {
-			LastMovingAction = 2;
-			RobotDrive::setDrivetowhere("backward");
-			RobotDrive::setDriveunit(RobotVelocity);
-			RobotVelocity = RobotVelocity + IntervalVelocity;
-			if (RobotVelocity > 500)
-				RobotVelocity = 500;
-		}
-	}
-	else if (coordinates[0] < thresholdMinX) {
-		if (coordinates[2] > thresholdMaxZ) {
-			RobotDrive::setDrivetowhere("turnright");
-			RobotDrive::setDriveunit(RobotVelocity);
-		}
-		else {
-			RobotDrive::setDrivetowhere("spinright");
-			RobotDrive::setDriveunit(50);
-		}
-	}
-	else if (coordinates[0] > thresholdMaxX) {
-		if (coordinates[2] > thresholdMaxZ) {
-			RobotDrive::setDrivetowhere("turnleft");
-			RobotDrive::setDriveunit(RobotVelocity);
-		}
-		else {
-			RobotDrive::setDrivetowhere("spinleft");
-			RobotDrive::setDriveunit(50);
-		}
-	}
-}
 void StopRobotTracking()
 {
+	//forward speed down
 	if (LastMovingAction == 1) {
 		RobotDrive::setDrivetowhere("forward");
 		RobotDrive::setDriveunit(RobotVelocity);
 	}
+	//backward speed down
 	else if (LastMovingAction == 2) {
 		RobotDrive::setDrivetowhere("backward");
 		RobotDrive::setDriveunit(RobotVelocity);
 	}
-
-	RobotVelocity = RobotVelocity - IntervalVelocity;
+	else if (LastMovingAction == 3) {
+		RobotDrive::setDrivetowhere("turnright");
+		RobotDrive::setDriveunit(RobotVelocity);
+	}
+	else if (LastMovingAction == 4) {
+		RobotDrive::setDrivetowhere("turnrleft");
+		RobotDrive::setDriveunit(RobotVelocity);
+	}
+	else if (LastMovingAction == 5) {
+		RobotDrive::setDrivetowhere("spinright");
+		RobotDrive::setDriveunit(RobotVelocity);
+	}
+	else if (LastMovingAction == 6) {
+		RobotDrive::setDrivetowhere("spinrleft");
+		RobotDrive::setDriveunit(RobotVelocity);
+	}
+	
+	//speed down function
+	RobotVelocity = RobotVelocity - IntervalVelocityMinus;
 	if (RobotVelocity <= 0)
 		RobotVelocity = 0;
+}
+void RunRobotTracking(nite::UserTracker* pUserTracker, const nite::UserData& user)
+{
+	double thresholdMaxZ = 1300.0;
+	double thresholdMinZ = 1000.0;
+	double thresholdMaxX = 220.0;
+	double thresholdMinX = 100.0;
+
+	glColor3f(1.0f, 1.0f, 1.0f);
+
+	float coordinates[3] = { 0 };
+	//coordinates[0] = user.getCenterOfMass().x;
+	//coordinates[1] = user.getCenterOfMass().y;
+	coordinates[2] = user.getCenterOfMass().z;
+	
+	pUserTracker->convertJointCoordinatesToDepth(user.getCenterOfMass().x, user.getCenterOfMass().y, user.getCenterOfMass().z, &coordinates[0], &coordinates[1]);
+
+	//cout << coordinates[0] << "   " << coordinates[2] << endl;
+
+	if (b_StopRobotTracking == true && RobotVelocity > 0)
+		StopRobotTracking();
+	else if (b_StopRobotTracking == true && RobotVelocity == 0)
+		b_StopRobotTracking = false;
+	else {
+		//host in the center
+		if (coordinates[0] <= thresholdMaxX && coordinates[0] >= thresholdMinX) {
+			//host in the range
+			if (coordinates[2] <= thresholdMaxZ && coordinates[2] >= thresholdMinZ) {
+				b_StopRobotTracking = true;
+			}
+			//host far away from iRobot in Z-Dim
+			else if (coordinates[2] > thresholdMaxZ) {
+				LastMovingAction = 1;
+				RobotDrive::setDrivetowhere("forward");
+				RobotDrive::setDriveunit(RobotVelocity);
+				RobotVelocity = RobotVelocity + IntervalVelocity;
+				if (RobotVelocity > 300)
+					RobotVelocity = 300;
+			}
+			//host cloesd to iRobot in Z-Dim
+			else if (coordinates[2] < thresholdMinZ) {
+				LastMovingAction = 2;
+				RobotDrive::setDrivetowhere("backward");
+				RobotDrive::setDriveunit(RobotVelocity);
+				RobotVelocity = RobotVelocity + IntervalVelocity;
+				// set maximun speed value
+				if (RobotVelocity > 300)
+					RobotVelocity = 300;
+			}
+		}
+		//host in the right viewing field of iRobot 
+		else if (coordinates[0] < thresholdMinX) {
+			if (coordinates[2] <= thresholdMaxZ) {
+				b_StopRobotTracking = true;
+
+				if (RobotVelocity == 0) {
+					LastMovingAction = 5;
+					RobotDrive::setDrivetowhere("spinright");
+					RobotDrive::setDriveunit(30);
+				}
+			}
+			//host far away from iRobot (turn right)
+			else if (coordinates[2] > thresholdMaxZ) {
+				LastMovingAction = 3;
+				RobotDrive::setDrivetowhere("turnright");
+				RobotDrive::setDriveunit(RobotVelocity);
+				
+				RobotVelocity = RobotVelocity + IntervalVelocity;
+				// set maximun speed value
+				if (RobotVelocity > 300)
+					RobotVelocity = 300;
+			}
+		}
+		////host in the left viewing field of iRobot
+		else if (coordinates[0] > thresholdMaxX) {
+			if (coordinates[2] <= thresholdMaxZ) {
+				b_StopRobotTracking = true;
+
+				if (RobotVelocity == 0) {
+					LastMovingAction = 6;
+					RobotDrive::setDrivetowhere("spinleft");
+					RobotDrive::setDriveunit(30);
+				}
+			}
+			else if (coordinates[2] > thresholdMaxZ) {
+				LastMovingAction = 4;
+				RobotDrive::setDrivetowhere("turnleft");
+				RobotDrive::setDriveunit(RobotVelocity);
+				
+				RobotVelocity = RobotVelocity + IntervalVelocity;
+				// set maximun speed value
+				if (RobotVelocity > 300)
+					RobotVelocity = 300;
+			}
+		}
+	}
+
 }
 void GetResultOfPID()
 {
@@ -637,12 +726,23 @@ void GetResultOfPID()
 		double x, y;
 		int idx = 0;
 		while (getline(templine, data, ',')) {
-			if (idx % 2 == 0) {
-				VotingPID::setID(data.c_str());
+			if (idx == 0) {
+				if (data.compare("1") == 0)
+					confidenceOfResult = 1;
+				else if (data.compare("0") == 0)
+					confidenceOfResult = 0;
+
+				//confidenceOfResult = 1;
+				cout << "data.c_str(): " << data.c_str() << "  confidenceOfResult: " << confidenceOfResult << endl;
 			}
-			else if (idx % 2 == 1) {
+			if (idx != 0 && idx % 2 == 1) {
+				VotingPID::setID(data.c_str());
+				cout << "id: " << data.c_str() << endl;
+			}
+			else if (idx != 0 && idx % 2 == 0) {
 				nameReadFile = data.c_str();
 				VotingPID::setnameVotingWithIndex(VotingPID::getID(), VotingPID::votingOfPID(VotingPID::getID(), nameReadFile));
+				cout << "name: " << data.c_str() << endl;
 			}
 			idx += 1;
 		}
@@ -951,11 +1051,6 @@ void SampleViewer::Display()
 
 	const nite::Array<nite::UserData>& users = userTrackerFrame.getUsers();
 
-	if (users.getSize() == 0)
-	{
-		StopRobotTracking();
-	}
-
 	// Read result.csv to tag profile on top of the head
 	GetResultOfPID();
 	
@@ -965,10 +1060,10 @@ void SampleViewer::Display()
 		
 		updateUserState(user, userTrackerFrame.getTimestamp());
 
-		if (g_runRobotTracking)
-		{
-			RunRobotTracking(m_pUserTracker, user);
-		}
+		if (confidenceOfResult == 1)
+			updateIdentity(VotingPID::getnameVotingWithIndex(user.getId()).c_str(), true, m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());
+		else if (confidenceOfResult == 0)
+			updateIdentity(VotingPID::getnameVotingWithIndex(user.getId()).c_str(), false, m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());
 
 		if (user.isNew())
 		{
@@ -980,21 +1075,29 @@ void SampleViewer::Display()
 			if (g_drawStatusLabel)
 			{
 				DrawStatusLabel(m_pUserTracker, user);
-				//DrawUserColor(m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());
 
-				updateIdentity(VotingPID::getnameVotingWithIndex(user.getId()).c_str(), true, m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());				
-				if(g_userNameConfidence[user.getId()] == true)
+				if (g_userNameConfidence[user.getId()] == true)
+				{
 					DrawIdentity(m_pUserTracker, user);
-				else
+					//DrawUserColor(m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());
+				}	
+				else if (g_userNameConfidence[user.getId()] == false)
+				{
 					DrawIdentityByHist(m_colorFrame, m_pUserTracker, user);
+					//DrawUserColor(m_colorFrame, m_pUserTracker, user, userTrackerFrame.getTimestamp());
+				}
 			}
 			if (g_drawCenterOfMass)
 			{
 				DrawCenterOfMass(m_pUserTracker, user);
 			}
-			if (g_drawBoundingBox)
+			if (g_drawBoundingBox && user.getId() == i_FollowingTarget)
 			{
 				DrawBoundingBox(user);
+			}
+			if (g_runRobotTracking && user.getId() == i_FollowingTarget) // if (g_runRobotTracking)
+			{
+				RunRobotTracking(m_pUserTracker, user);
 			}
 
 			if (users[i].getSkeleton().getState() == nite::SKELETON_TRACKED && g_drawSkeleton)
@@ -1008,6 +1111,9 @@ void SampleViewer::Display()
 				WriteSkeletonInfo(user.getId(), csvfile, user, time_str);
 			}
 		}
+		//else if (user.isLost()) {
+		//	StopRobotTracking();
+		//}
 
 		if (m_poseUser == 0 || m_poseUser == user.getId())
 		{
