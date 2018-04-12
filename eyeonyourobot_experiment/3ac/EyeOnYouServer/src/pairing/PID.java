@@ -31,12 +31,15 @@ import eyeonyouserver.MainServerSocket;
 
 public class PID {
 	/***
-	 * @author PID class is transformed from WeiChun's EyeOnYou Demo code.
+	 * {ID class for 3AC Algo evaluation
+	 * @author TingYuanKe on 2018/4/13
 	 */
 	
 	// 1. DTW or directly check cross correlation.
 	// 2. samplingRateOfSkn should be retrieved by file size.
 	
+	int framesOfSkeletonSegment = 20; //72
+	int framesOfInnertialSegment = 100; //360
 	public static int collectSeconds = 5;
 	public static int sampleingRateOfSkn = 0;
 	public static int sampleingRateOfItl = 0;
@@ -154,67 +157,63 @@ public class PID {
 //			System.out.println(skeletons_acc_set.get(1).get(i).getAccRight_wrist()[0]);
 //		}
 		
-		//Pair skeleton data with users' IDs every 5 seconds
-		ArrayList<Double> scores = new ArrayList<Double>();
-        System.out.println("*************************");
-		for (int i = 0; i < skeletons_acc_set.size(); i++) {
-			for (int j = 0; j < inertials_acc_set.size(); j++) {
-
-				double score = 0;
-				score = FusionAlgo.calResult_alg3(skeletons_acc_set.get(i), inertials_acc_set.get(j));
-				scores.add(score);
-				System.out.println("Scores: (i=" + i + ", j=" + j + ") -> " + score);
-			}
-			
-		}
-		System.out.println("*************************");
-		
-		/***
-		 * Get the best matching pairing result from each skeleton to each inertial based on scores.
-		 * Assign 1 when the high score with strongest confidence happened.
-		 * Assign 0; otherwise.
-		 */
-		int[][] resultMatrix = IDPairing.pairing_ul(scores, S_skeletonsID.size(), I_usersName.size());
-		
-		// Write pairing results of each frame every 1 seconds
-		int[] match = new int[S_skeletonsID.size()];
-		for (int i = 0; i < S_skeletonsID.size(); i++) {
-			match[i] = -1;
-		}
-		for (int i = 0; i < skeletons_set.size(); i++) {
-			for (int j = 0; j < inertials_set.size(); j++) {
-				if (resultMatrix[i][j] == 1) {
-					match[i] = j;
+		//pair skeleton data with users' IDs every 5 seconds
+//		for (int t = 0; t < skeletons.get(0).size()/framesOfSkeletonSegment; t++) {
+		for (int t = 0; t < 1; t++) {
+			ArrayList<Double> scores = new ArrayList<Double>();
+			for (int i = 0; i < skeletons.size(); i++) {
+				for (int j = 0; j < inertia_set.size(); j++) {
+					ArrayList<Skeleton> sub_jointspos = new ArrayList<Skeleton>(skeletons.get(i).subList(t * framesOfSkeletonSegment, (t + 1) * framesOfSkeletonSegment));	// 20 samples in 1 seconds
+					ArrayList<Inertia> sub_inertia = new ArrayList<Inertia>(inertia_set.get(j).subList(t * framesOfInnertialSegment, (t + 1) * framesOfInnertialSegment));	// 100 samples in 1 seconds
+					
+					TurnList kinectTurns = TurnMag.genKINECTTurnList(sub_jointspos);
+					TurnList imuTurns = TurnMag.genIMUTurnList(sub_inertia);		
+					scores.add(FusionAlgo.calResult_alg3(kinectTurns, imuTurns));
 				}
 			}
-		}
-		
+			int[][] result = IDPairing.pairing(scores, skeletonIDs.size(), users.size());
 			
-		try {
-			String[] IDCoordinate = new String[S_skeletonsID.size() * 2 + 1];
-			CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);  // CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv", true), ',', CSVWriter.NO_QUOTE_CHARACTER);
-			if (confidenceOfSimilarity == 1)
-				IDCoordinate[0] = "1";
-			else if (confidenceOfSimilarity == 0)
-				IDCoordinate[0] = "0";
-//				for (int k = t * framesOfSkeletonSegment; k < (t+1) * framesOfSkeletonSegment; k++) {
-				for (int i = 0; i < S_skeletonsID.size(); i++) {
-					if (match[i] >= 0) {
-						IDCoordinate[i*2 + 1] = String.valueOf(S_skeletonsID.get(i));
-						IDCoordinate[i*2 + 2] = I_usersName.get(match[i]);
-					} else {
-						IDCoordinate[i*2 + 1] = String.valueOf(S_skeletonsID.get(i));
-						IDCoordinate[i*2 + 2] = "Unknown";
+			// write pairing results of each frame every 1 seconds
+			int[] match = new int[skeletonIDs.size()];
+			for (int i = 0; i < skeletonIDs.size(); i++) {
+				match[i] = -1;
+			}
+			for (int i = 0; i < skeletons.size(); i++) {
+				for (int j = 0; j < inertia_set.size(); j++) {
+//					System.out.printf("i=" + i + " j=" + j);
+//					System.out.printf(" result[i][j]=%d || ", result[i][j]);
+					if (result[i][j] == 1) {
+						match[i] = j;
 					}
 				}
-				cw.writeNext(IDCoordinate);
-//				}
-			cw.close();
-			// Complete yielding the pairing result.csv and request Kinect to perform tagging profile name.
-			MainServerSocket.clientRunPID.requestKinectTagProfile();
-		} catch (IOException e) {
-			e.printStackTrace();
+//				System.out.println("");
+			}
+			
+			try {
+				String[] IDCoordinate = new String[skeletonIDs.size() * 4];
+//				CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv", true), ',', CSVWriter.NO_QUOTE_CHARACTER);
+				CSVWriter cw = new CSVWriter(new FileWriter(rootDir + "/KINECTData/result.csv"), ',', CSVWriter.NO_QUOTE_CHARACTER);
+				for (int k = t * framesOfSkeletonSegment; k < (t+1) * framesOfSkeletonSegment; k++) {
+					for (int i = 0; i < skeletonIDs.size(); i++) {
+						if (match[i] >= 0) {
+							IDCoordinate[i*4] = String.valueOf(usersID.get(i));
+							IDCoordinate[i*4 + 1] = users.get(match[i]);
+						} else {
+							IDCoordinate[i*4] = String.valueOf(usersID.get(i));
+							IDCoordinate[i*4 + 1] = "Unknown";
+						}
+						IDCoordinate[i*4 + 2] = String.valueOf(bodyHead.get(i).get(k).getX());
+						IDCoordinate[i*4 + 3] = String.valueOf(bodyHead.get(i).get(k).getY());
+					}
+					cw.writeNext(IDCoordinate);
+				}
+				cw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 		}
 		
 	}
+	
 }
